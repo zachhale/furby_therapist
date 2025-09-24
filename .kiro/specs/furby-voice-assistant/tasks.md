@@ -82,7 +82,7 @@
   - Test complete workflow with various input scenarios
   - _Requirements: 3.1, 3.2, 4.1, 4.4_
 
-- [ ] 8. Enhance interactive mode and user experience
+- [x] 8. Enhance interactive mode and user experience
   - Implement robust continuous input loop as the primary CLI mode
   - Add graceful exit handling for Ctrl+C and quit commands (quit, exit, bye)
   - Create welcoming Furby-style startup message and usage instructions
@@ -90,7 +90,18 @@
   - Include conversation history context for more natural interactions
   - _Requirements: 3.5, 3.6_
 
-- [ ] 9. Optimize for Raspberry Pi Zero 2 W performance
+- [x] 9. Implement good morning/good night greetings with authentic Furbish
+  - Replace generic hello messages with "good morning" greetings when starting up the CLI
+  - Replace generic goodbye messages with "good night" greetings when ending the chat
+  - Create good morning messages in English and authentic Furbish (e.g., "noo-loo koh-koh" - "happy wake")
+  - Create good night messages in English and authentic Furbish (e.g., "koh-koh may-may" - "sleep love")
+  - Update startup welcome message to use good morning greeting instead of generic hello
+  - Update shutdown goodbye message to use good night greeting instead of generic goodbye
+  - Ensure all Furbish phrases use authentic vocabulary from the official dictionary
+  - Write unit tests for greeting message generation and Furbish authenticity
+  - _Requirements: 2.5, 2.6, 3.5, 3.6_
+
+- [ ] 10. Optimize for Raspberry Pi Zero 2 W performance
   - Profile memory usage and optimize data structures for <50MB RAM
   - Implement lazy loading for JSON response database to reduce startup time
   - Optimize string operations and keyword matching for ARM processor
@@ -98,21 +109,21 @@
   - Cache parsed JSON data efficiently in memory
   - _Requirements: 5.1, 5.2, 5.3, 5.5, 5.6_
 
-- [ ] 10. Implement comprehensive error handling
+- [ ] 11. Implement comprehensive error handling
   - Add input validation with friendly Furby-style error messages
   - Implement graceful fallbacks when keyword matching fails
   - Add logging system for debugging while maintaining user experience
   - Create resource cleanup and memory management safeguards
   - _Requirements: 4.1, 4.4, 4.5_
 
-- [ ] 11. Create comprehensive test suite
+- [ ] 12. Create comprehensive test suite
   - Write unit tests for all core components (processor, matcher, engine)
   - Add integration tests for end-to-end query processing
   - Create performance tests to verify Raspberry Pi requirements
   - Add manual test scenarios for therapeutic quality and Furby authenticity
   - _Requirements: 5.4, 5.6_
 
-- [ ] 12. Add packaging and deployment setup
+- [ ] 13. Add packaging and deployment setup
   - Create setup script for easy installation on Raspberry Pi
   - Add executable script for convenient CLI access
   - Create documentation for installation and usage

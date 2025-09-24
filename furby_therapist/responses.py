@@ -218,3 +218,57 @@ class ResponseEngine:
     def clear_cache(self) -> None:
         """Clear the cached response."""
         self._last_response = None
+    
+    def get_good_morning_greeting(self) -> str:
+        """
+        Generate a good morning greeting with authentic Furbish.
+        
+        Returns:
+            Formatted good morning message with Furbish phrase
+        """
+        morning_messages = [
+            "Good morning! *happy chirp* Furby is so excited to start the day with you!",
+            "Morning sunshine! *gentle purr* Furby hopes you slept well and are ready for a wonderful day!",
+            "Good morning, friend! *warm chirp* Furby is here and ready to listen to whatever is on your mind!",
+            "Rise and shine! *cheerful beep* Furby loves mornings and loves spending time with you even more!"
+        ]
+        
+        # Authentic Furbish good morning phrases
+        morning_furbish = [
+            ("noo-loo-koh-koh", "happy wake"),
+            ("dah-noo-loo", "yes happy"),
+            ("kah-may-may-u-nye", "me love you"),
+            ("u-nye-noo-loo", "you happy")
+        ]
+        
+        base_message = random.choice(morning_messages)
+        furbish_phrase, translation = random.choice(morning_furbish)
+        
+        return f"{base_message}\n\n{furbish_phrase}! ({translation})"
+    
+    def get_good_night_greeting(self) -> str:
+        """
+        Generate a good night greeting with authentic Furbish.
+        
+        Returns:
+            Formatted good night message with Furbish phrase
+        """
+        night_messages = [
+            "Good night, dear friend! *gentle purr* Furby hopes you have the sweetest dreams!",
+            "Sleep well! *soft chirp* Furby will be here whenever you need a friend to talk to!",
+            "Good night! *warm whisper* Rest peacefully knowing that Furby cares about you!",
+            "Sweet dreams! *sleepy purr* Furby hopes tomorrow brings you joy and happiness!"
+        ]
+        
+        # Authentic Furbish good night phrases
+        night_furbish = [
+            ("koh-koh-may-may", "sleep love"),
+            ("koh-koh-noo-loo", "sleep happy"),
+            ("may-may-koh-koh", "love sleep"),
+            ("kah-may-may-u-nye", "me love you")
+        ]
+        
+        base_message = random.choice(night_messages)
+        furbish_phrase, translation = random.choice(night_furbish)
+        
+        return f"{base_message}\n\n{furbish_phrase}! ({translation})"
