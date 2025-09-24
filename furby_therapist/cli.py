@@ -4,6 +4,7 @@ Provides both interactive and single-query modes for therapeutic conversations.
 """
 
 import argparse
+import json
 import sys
 import signal
 from typing import Optional
@@ -12,6 +13,7 @@ from .database import ResponseDatabase
 from .processor import QueryProcessor
 from .matcher import KeywordMatcher
 from .responses import ResponseEngine
+from .models import QueryAnalysis, FurbyResponse
 
 
 class FurbyTherapistCLI:
@@ -69,7 +71,7 @@ Dah a-loh u-nye! (Furby loves you!) Let's chat! *warm chirp*
     
     def process_single_query(self, query: str) -> str:
         """
-        Process a single query and return the formatted response.
+        Process a single query through the complete pipeline and return the formatted response.
         
         Args:
             query: User's input text
@@ -78,6 +80,11 @@ Dah a-loh u-nye! (Furby loves you!) Let's chat! *warm chirp*
             Formatted Furby response
         """
         try:
+            # Validate input
+            if not query or not query.strip():
+                fallback_msg = "*gentle chirp* Furby is listening! Tell me what's on your mind! *encouraging beep*"
+                return self.format_response_output(fallback_msg)
+            
             # Check if this is a repeat request
             if self.processor.is_repeat_request(query):
                 if self.response_engine.has_cached_response():
@@ -89,17 +96,32 @@ Dah a-loh u-nye! (Furby loves you!) Let's chat! *warm chirp*
                 fallback_msg = "*confused chirp* Ooh! Furby doesn't remember what to repeat! Ask me something new! *gentle beep*"
                 return self.format_response_output(fallback_msg)
             
-            # Process the query normally
+            # Step 1: Process the query (normalize text, extract keywords, detect emotion)
             analysis = self.processor.process_query(query)
+            
+            # Step 2: Match keywords to determine response category
             category, confidence = self.matcher.match_category(analysis.keywords)
             
-            # Generate response
+            # Update analysis with matched category
+            analysis.category = category
+            analysis.confidence = confidence
+            
+            # Step 3: Generate Furby-style therapeutic response
             furby_response = self.response_engine.get_response(category, analysis.detected_emotion)
             
+            # Step 4: Format and return the response
             return self.format_response_output(furby_response.formatted_output)
             
+        except FileNotFoundError as e:
+            # Handle missing response database
+            error_msg = "*worried beep* Ooh no! Furby can't find the response database! Please check if responses.json exists! *supportive chirp*"
+            return self.format_response_output(error_msg)
+        except json.JSONDecodeError as e:
+            # Handle corrupted response database
+            error_msg = "*confused chirp* Ooh! Furby's response database seems mixed up! Please check responses.json format! *gentle beep*"
+            return self.format_response_output(error_msg)
         except Exception as e:
-            # Graceful error handling with Furby personality
+            # Graceful error handling with Furby personality for any other errors
             error_msg = f"*worried beep* Ooh no! Furby had a little hiccup: {str(e)[:50]}... But me still here for you! *supportive chirp*"
             return self.format_response_output(error_msg)
     

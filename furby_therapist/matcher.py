@@ -3,8 +3,8 @@ Keyword matcher for categorizing user queries.
 """
 
 from typing import Dict, List, Tuple, Optional
-from furby_therapist.database import ResponseDatabase, ResponseCategory
-from furby_therapist.models import QueryAnalysis
+from .database import ResponseDatabase
+from .models import ResponseCategory, QueryAnalysis
 
 
 class KeywordMatcher:

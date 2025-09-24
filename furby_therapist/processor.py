@@ -4,19 +4,9 @@ Query processor for normalizing and preparing user input.
 
 import re
 import string
-from dataclasses import dataclass
 from typing import List, Optional
 
-
-@dataclass
-class QueryAnalysis:
-    """Result of query analysis containing normalized text and extracted information."""
-    original_text: str
-    normalized_text: str
-    keywords: List[str]
-    detected_emotion: str
-    confidence: float
-    category: str = "general"
+from .models import QueryAnalysis
 
 
 class QueryProcessor:
@@ -237,5 +227,6 @@ class QueryProcessor:
             normalized_text=normalized,
             keywords=keywords,
             detected_emotion=emotion,
-            confidence=confidence
+            confidence=confidence,
+            category="general"  # Will be updated by matcher
         )
