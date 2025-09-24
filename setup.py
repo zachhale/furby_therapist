@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Setup script for Furby Therapist CLI.
 """
@@ -9,30 +10,42 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="furby-therapist",
-    version="0.1.0",
+    version="1.0.0",
     author="Furby Therapist Team",
-    description="A therapeutic assistant with Furby personality for CLI",
+    description="A whimsical therapeutic assistant that speaks in Furby language",
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: End Users/Desktop",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Topic :: Games/Entertainment",
+        "Topic :: Scientific/Engineering :: Human Machine Interfaces",
     ],
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     entry_points={
         "console_scripts": [
-            "furby-therapist=furby_therapist.cli:main",
+            "furby_therapist=furby_therapist.cli:main",
         ],
     },
+    include_package_data=True,
+    package_data={
+        "furby_therapist": ["*.json", "*.md"],
+    },
     install_requires=[
-        # No external dependencies - using only Python standard library
+        # No external dependencies - uses only Python standard library
     ],
+    extras_require={
+        "dev": [
+            "pytest",
+            "pytest-cov",
+        ],
+    },
 )

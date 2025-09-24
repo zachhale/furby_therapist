@@ -68,14 +68,14 @@
   - Write unit tests to validate Furbish phrase authenticity and proper formatting
   - _Requirements: 2.5, 2.6_
 
-- [-] 6. Build CLI interface with dual modes
+- [x] 6. Build CLI interface with dual modes
   - Create main CLI entry point that defaults to long-running interactive mode
   - Implement continuous conversation loop with persistent prompt for interactive mode
   - Add command-line argument parsing to support non-interactive single query mode (e.g., --query "how are you?")
   - Create consistent output formatting for Furby responses in both modes
   - _Requirements: 3.1, 3.3, 3.4, 3.5, 3.7_
 
-- [ ] 7. Integrate components into complete pipeline
+- [-] 7. Integrate components into complete pipeline
   - Wire together query processor, keyword matcher, and response engine
   - Implement end-to-end query processing from CLI input to Furby response
   - Add error handling throughout the pipeline with Furby-style error messages
