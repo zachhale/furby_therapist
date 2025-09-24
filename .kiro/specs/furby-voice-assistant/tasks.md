@@ -110,13 +110,24 @@
   - Create resource cleanup and memory management safeguards
   - _Requirements: 4.1, 4.4, 4.5_
 
-- [ ] 11. Create comprehensive test suite
+- [x] 11. Expand bicycle humor with cycling culture references
+  - Add jokes and references about alternative cycling culture (alt cycling, gravel grinding, bikepacking)
+  - Include humor about r/xbiking community topics (weird bikes, frankenbikes, rigid MTBs on road, etc.)
+  - Add jokes referencing Bicycle Quarterly magazine topics (randonneuring, vintage bikes, tire pressure debates)
+  - Include references to Calling in Sick magazine culture and bike messenger humor
+  - Create Furby-style commentary on cycling gear debates (clipless vs flats, carbon vs steel, etc.)
+  - Add therapeutic cycling metaphors that reference these communities
+  - Ensure all cycling humor maintains the supportive therapeutic tone
+  - Write unit tests for expanded cycling keyword detection and themed responses
+  - _Requirements: 2.2, 2.4, 2.5_
+
+- [ ] 12. Create comprehensive test suite
   - Write unit tests for all core components (processor, matcher, engine)
   - Add integration tests for end-to-end query processing
   - Add manual test scenarios for therapeutic quality and Furby authenticity
   - _Requirements: 5.4, 5.6_
 
-- [ ] 12. Add packaging and deployment setup
+- [ ] 13. Add packaging and deployment setup
   - Create setup script for easy installation
   - Add executable script for convenient CLI access
   - Create documentation for installation and usage

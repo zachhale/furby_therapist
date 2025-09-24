@@ -48,6 +48,22 @@ class TestCompleteIntegration(unittest.TestCase):
             any(word in response.lower() for word in ['bike', 'cycle', 'pedal', 'wheel', 'chain'])
         )
     
+    def test_complete_pipeline_cycling_culture_references(self):
+        """Test complete pipeline with cycling culture references."""
+        culture_queries = [
+            "I love gravel grinding",
+            "My frankenbike is awesome",
+            "Bikepacking adventure planning",
+            "Clipless vs flats debate"
+        ]
+        
+        for query in culture_queries:
+            with self.subTest(query=query):
+                response = self.cli.process_single_query(query)
+                self.assertIn("💜 Furby says:", response)
+                # Should be a substantial response
+                self.assertGreater(len(response.strip()), 50)
+    
     def test_complete_pipeline_repeat_functionality(self):
         """Test complete pipeline with repeat functionality."""
         # First, make a regular query

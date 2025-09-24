@@ -327,6 +327,15 @@ class TestQueryProcessor(unittest.TestCase):
         self.assertIn("cycling", keywords)
         self.assertIn("great", keywords)
         self.assertIn("exercise", keywords)
+        
+        # Test cycling culture keywords
+        keywords = self.processor.extract_keywords("gravel grinding adventure")
+        self.assertIn("gravel", keywords)
+        self.assertIn("grinding", keywords)
+        
+        keywords = self.processor.extract_keywords("frankenbike build project")
+        self.assertIn("frankenbike", keywords)
+        self.assertIn("build", keywords)
     
     def test_bicycle_query_processing(self):
         """Test complete processing of bicycle-related queries."""

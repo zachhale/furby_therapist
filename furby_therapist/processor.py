@@ -126,6 +126,9 @@ class QueryProcessor:
             if not text or not isinstance(text, str):
                 return []
             
+            # Check for cycling-specific multi-word phrases first
+            cycling_phrases = self._extract_cycling_phrases(text)
+            
             # Split into words with error handling
             words = text.split()
             
@@ -142,6 +145,9 @@ class QueryProcessor:
                     len(word) < 50 and  # Prevent extremely long words
                     word.isalnum()):  # Only alphanumeric words
                     keywords.append(word)
+            
+            # Add cycling phrases to keywords
+            keywords.extend(cycling_phrases)
             
             # Remove duplicates while preserving order
             seen = set()
@@ -160,6 +166,56 @@ class QueryProcessor:
         except Exception as e:
             logging.error(f"Error extracting keywords: {e}")
             return []
+    
+    def _extract_cycling_phrases(self, text: str) -> List[str]:
+        """
+        Extract cycling-specific multi-word phrases from text.
+        
+        Args:
+            text: Text to search for cycling phrases
+            
+        Returns:
+            List of cycling phrases found in the text
+        """
+        cycling_phrases = [
+            'calling in sick',
+            'bicycle quarterly',
+            'alt cycling',
+            'gravel grinding',
+            'tire pressure',
+            'rigid mtb',
+            'mountain bike',
+            'bike messenger',
+            'fixed gear',
+            'single speed',
+            'path less pedaled',
+            'the radavist',
+            'bike insights',
+            'endurance geometry',
+            'aggressive geometry',
+            'touring geometry',
+            'monster cross',
+            'all road',
+            'gravel grinder',
+            'adventure bike',
+            'bb drop',
+            'head tube',
+            'chain stay',
+            'reach stack',
+            'weight weenie',
+            'dentist bike',
+            'fred sled'
+        ]
+        
+        found_phrases = []
+        text_lower = text.lower()
+        
+        for phrase in cycling_phrases:
+            if phrase in text_lower:
+                # Add the phrase as a single keyword (replace spaces with underscores)
+                found_phrases.append(phrase.replace(' ', '_'))
+        
+        return found_phrases
     
     def detect_emotion(self, text: str) -> tuple[str, float]:
         """

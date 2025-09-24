@@ -271,6 +271,14 @@ class TestBicycleEasterEggs(unittest.TestCase):
             (['chain'], 'bicycle'),
             (['wheel'], 'bicycle'),
             (['maintenance'], 'bicycle'),
+            # Cycling culture keywords
+            (['gravel'], 'bicycle'),
+            (['bikepacking'], 'bicycle'),
+            (['randonneuring'], 'bicycle'),
+            (['xbiking'], 'bicycle'),
+            (['frankenbike'], 'bicycle'),
+            (['clipless'], 'bicycle'),
+            (['tubeless'], 'bicycle'),
         ]
         
         for keywords, expected_category in test_cases:
@@ -317,6 +325,16 @@ class TestBicycleEasterEggs(unittest.TestCase):
         score = self.matcher._check_bicycle_keywords(['bike', 'pedal'])
         self.assertGreater(score, 0.0)
         
+        # Test cycling culture keywords
+        score = self.matcher._check_bicycle_keywords(['gravel', 'grinding'])
+        self.assertGreater(score, 0.0)
+        
+        score = self.matcher._check_bicycle_keywords(['frankenbike', 'xbiking'])
+        self.assertGreater(score, 0.0)
+        
+        score = self.matcher._check_bicycle_keywords(['clipless', 'flats'])
+        self.assertGreater(score, 0.0)
+        
         # Test non-bicycle keywords
         score = self.matcher._check_bicycle_keywords(['sad', 'angry'])
         self.assertEqual(score, 0.0)
@@ -328,8 +346,12 @@ class TestBicycleEasterEggs(unittest.TestCase):
     def test_is_cycling_related_method(self):
         """Test the _is_cycling_related method."""
         # More specific cycling words that should match
-        cycling_words = ['wheelset', 'tubeless', 'puncture', 'chainring', 'cassette', 'derailleur']
-        non_cycling_words = ['happy', 'sad', 'computer', 'food', 'wheel', 'tire', 'repair']
+        cycling_words = [
+            'wheelset', 'tubeless', 'puncture', 'chainring', 'cassette', 'derailleur',
+            'bikepacking', 'randonneuring', 'frankenbike', 'xbiking', 'gravel',
+            'grinding', 'messenger', 'courier', 'fixie', 'singlespeed', 'clipless'
+        ]
+        non_cycling_words = ['happy', 'sad', 'computer', 'food', 'repair']
         
         for word in cycling_words:
             with self.subTest(word=word):

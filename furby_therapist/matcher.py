@@ -130,13 +130,18 @@ class KeywordMatcher:
         if user_keyword == category_keyword:
             return True
         
-        # Containment match (either direction) - but only for meaningful lengths
-        # Avoid matching single characters or very short words accidentally
-        min_length_for_containment = 3
+        # Containment match - be very strict to avoid false positives
+        # Only allow containment for very specific cycling compound words
+        cycling_compound_patterns = [
+            ('bike', 'biking'), ('bike', 'biker'), ('bike', 'bikes'),
+            ('cycle', 'cycling'), ('cycle', 'cyclist'), ('cycle', 'cycles'),
+            ('ride', 'riding'), ('ride', 'rider'), ('ride', 'rides'),
+            ('wheel', 'wheels'), ('gear', 'gears'), ('chain', 'chains')
+        ]
         
-        if (len(user_keyword) >= min_length_for_containment and 
-            len(category_keyword) >= min_length_for_containment):
-            if user_keyword in category_keyword or category_keyword in user_keyword:
+        for base, compound in cycling_compound_patterns:
+            if (user_keyword == base and category_keyword == compound) or \
+               (user_keyword == compound and category_keyword == base):
                 return True
         
         # Handle common variations and stemming-like matching
@@ -158,15 +163,11 @@ class KeywordMatcher:
             return False
             
         # Handle common suffixes (basic stemming-like behavior)
+        # Be more restrictive to avoid false matches
         suffix_mappings = [
-            ('ing', ''),
-            ('ed', ''),
-            ('er', ''),
-            ('est', ''),
-            ('ily', 'y'),  # happily -> happy
-            ('ly', ''),
-            ('s', ''),
-            ('ied', 'y'),  # worried -> worry
+            ('ing', ''),   # cycling -> cycle
+            ('er', ''),    # rider -> ride  
+            ('s', ''),     # bikes -> bike
             ('ies', 'y'),  # worries -> worry
         ]
         
@@ -196,22 +197,64 @@ class KeywordMatcher:
             Score for bicycle keyword matches (higher = more bicycle-related)
         """
         bicycle_keywords = {
+            # Basic cycling terms
             'bike', 'bicycle', 'cycling', 'riding', 'pedal', 'chain', 'wheel', 
             'maintenance', 'cyclist', 'ride', 'biking', 'cycle', 'spoke', 'tire', 
-            'gear', 'brake', 'handlebar', 'saddle', 'frame', 'derailleur', 'cassette',
+            'brake', 'handlebar', 'saddle', 'frame', 'derailleur', 'cassette',
             'crankset', 'shifter', 'helmet', 'lycra', 'cadence', 'watts', 'strava',
-            'peloton', 'gruppetto', 'bonk', 'fred', 'roadie', 'mtb', 'fixie'
+            'peloton', 'gruppetto', 'bonk', 'fred', 'roadie', 'mtb', 'fixie',
+            # Alt cycling and gravel culture
+            'gravel', 'bikepacking', 'randonneuring', 'xbiking', 'frankenbike', 
+            'messenger', 'courier',
+            # Gear debates and culture (more specific)
+            'clipless', 'flats', 'tubeless', 'psi',
+            'vintage', 'retro', 'lugged', 'touring', 'commuter', 'utility',
+            # Community and magazine references  
+            'quarterly', 'fixed', 'singlespeed', 'conversion', 'track', 'pursuit',
+            # Multi-word phrases (with underscores)
+            'calling_in_sick', 'bicycle_quarterly', 'alt_cycling', 'gravel_grinding',
+            'tire_pressure', 'rigid_mtb', 'mountain_bike', 'bike_messenger',
+            'fixed_gear', 'single_speed', 'path_less_pedaled', 'the_radavist',
+            'bike_insights', 'endurance_geometry', 'aggressive_geometry',
+            # Bike geometry terms
+            'geometry', 'reach', 'stack', 'wheelbase', 'chainstay', 'headtube',
+            'trail', 'rake', '650b', '700c', 'endurance', 'aggressive', 'slack', 'steep',
+            # Alt cycling culture and events
+            'radavist', 'porteur', 'constructeur', 'rando', 'audax', 'brevets',
+            'permanents', 'fleche', 'pbp', 'tcr', 'monster', 'adventure',
+            'grinder', 'retrogrouch', 'luddite', 'weenie'
+        }
+        
+        # More specific cycling terms that need context
+        contextual_bicycle_keywords = {
+            'gear': ['bike', 'bicycle', 'cycling', 'shift', 'derailleur'],
+            'steel': ['bike', 'bicycle', 'frame', 'carbon'],
+            'grinding': ['gravel', 'bike', 'cycling'],
+            'rigid': ['mtb', 'bike', 'mountain'],
+            'carbon': ['bike', 'bicycle', 'frame', 'steel'],
+            'pressure': ['tire', 'psi', 'bike', 'bicycle']
         }
         
         score = 0.0
-        for keyword in keywords:
+        keywords_lower = [kw.lower() for kw in keywords]  # Handle case sensitivity
+        
+        for keyword in keywords_lower:
             # Direct matches get full points
             if keyword in bicycle_keywords:
                 score += 1.0
-            # Partial matches for compound words - but be more selective
-            elif len(keyword) > 3 and any(
-                (bike_word in keyword and len(bike_word) > 3) or 
-                (keyword in bike_word and len(keyword) > 3) 
+            # Check contextual keywords (need supporting context)
+            elif keyword in contextual_bicycle_keywords:
+                context_words = contextual_bicycle_keywords[keyword]
+                if any(ctx_word in keywords_lower for ctx_word in context_words):
+                    score += 1.0  # Full score if context is present
+                else:
+                    score += 0.0  # No score without context
+            # Partial matches for compound words - be very selective
+            elif len(keyword) > 6 and any(
+                (bike_word in keyword and len(bike_word) > 6 and 
+                 (keyword.startswith(bike_word) or keyword.endswith(bike_word))) or 
+                (keyword in bike_word and len(keyword) > 6 and len(bike_word) > 8 and
+                 (bike_word.startswith(keyword) or bike_word.endswith(keyword)))
                 for bike_word in bicycle_keywords
             ):
                 score += 0.7
@@ -235,13 +278,36 @@ class KeywordMatcher:
         # to avoid false positives with emotional words
         specific_cycling_patterns = [
             'wheelset', 'tubeless', 'puncture', 'chainring', 'cassette',
-            'derailleur', 'groupset', 'crankset', 'headset', 'seatpost'
+            'derailleur', 'groupset', 'crankset', 'headset', 'seatpost',
+            'bikepacking', 'randonneuring', 'frankenbike', 'xbiking',
+            'gravel', 'grinding', 'messenger', 'courier', 'fixie',
+            'singlespeed', 'clipless', 'tubeless', 'pannier', 'dropout',
+            'geometry', 'wheelbase', 'chainstay', 'headtube', 'reach',
+            'stack', 'trail', 'rake', 'porteur', 'constructeur', 'rando',
+            'audax', 'brevets', 'fleche', 'radavist', 'retrogrouch'
         ]
         
         # Check for exact matches or very specific containment
         for pattern in specific_cycling_patterns:
-            if word == pattern or (len(word) > 6 and pattern in word):
+            if word == pattern:
                 return True
+            # Only allow containment for longer patterns to avoid false matches
+            elif len(pattern) > 6 and len(word) > 8 and pattern in word:
+                return True
+        
+        # Check for cycling culture compound words - be very specific
+        cycling_compounds = [
+            'bike', 'cycle', 'wheel', 'chain', 'gear', 'spoke', 'tire', 'tube'
+        ]
+        
+        # Only match if the word contains cycling terms and is reasonably long
+        # AND the cycling term is at the beginning or end of the word (not middle)
+        if len(word) > 5:
+            for compound in cycling_compounds:
+                if len(compound) > 3 and compound in word:
+                    # Only match if compound is at start or end of word
+                    if word.startswith(compound) or word.endswith(compound):
+                        return True
         
         return False
     
