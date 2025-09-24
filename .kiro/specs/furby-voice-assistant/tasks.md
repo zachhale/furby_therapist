@@ -101,31 +101,23 @@
   - Write unit tests for greeting message generation and Furbish authenticity
   - _Requirements: 2.5, 2.6, 3.5, 3.6_
 
-- [ ] 10. Optimize for Raspberry Pi Zero 2 W performance
-  - Profile memory usage and optimize data structures for <50MB RAM
-  - Implement lazy loading for JSON response database to reduce startup time
-  - Optimize string operations and keyword matching for ARM processor
-  - Add performance monitoring and ensure <1 second response times
-  - Cache parsed JSON data efficiently in memory
-  - _Requirements: 5.1, 5.2, 5.3, 5.5, 5.6_
 
-- [x] 11. Implement comprehensive error handling
+
+- [x] 10. Implement comprehensive error handling
   - Add input validation with friendly Furby-style error messages
   - Implement graceful fallbacks when keyword matching fails
   - Add logging system for debugging while maintaining user experience
   - Create resource cleanup and memory management safeguards
   - _Requirements: 4.1, 4.4, 4.5_
 
-- [ ] 12. Create comprehensive test suite
+- [ ] 11. Create comprehensive test suite
   - Write unit tests for all core components (processor, matcher, engine)
   - Add integration tests for end-to-end query processing
-  - Create performance tests to verify Raspberry Pi requirements
   - Add manual test scenarios for therapeutic quality and Furby authenticity
   - _Requirements: 5.4, 5.6_
 
-- [ ] 13. Add packaging and deployment setup
-  - Create setup script for easy installation on Raspberry Pi
+- [ ] 12. Add packaging and deployment setup
+  - Create setup script for easy installation
   - Add executable script for convenient CLI access
   - Create documentation for installation and usage
-  - Test deployment on clean Raspberry Pi Zero 2 W system
   - _Requirements: 1.1, 1.3, 1.4_

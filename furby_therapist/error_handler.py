@@ -32,7 +32,7 @@ class FurbyErrorHandler:
         
         # Memory monitoring thresholds (in MB)
         self.memory_warning_threshold = 40  # 40MB warning
-        self.memory_critical_threshold = 50  # 50MB critical (Raspberry Pi limit)
+        self.memory_critical_threshold = 50  # 50MB critical
         
         # Error message templates with Furby personality
         self.furby_error_messages = {

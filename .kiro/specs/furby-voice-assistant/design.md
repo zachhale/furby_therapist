@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Furby Therapist CLI is a lightweight, offline therapeutic assistant that combines the whimsical personality of a Furby toy with simple therapeutic responses. The system uses keyword-based matching to select appropriate responses from a pre-defined database, ensuring minimal resource usage suitable for Raspberry Pi Zero 2 W hardware.
+The Furby Therapist CLI is a lightweight, offline therapeutic assistant that combines the whimsical personality of a Furby toy with simple therapeutic responses. The system uses keyword-based matching to select appropriate responses from a pre-defined database, ensuring minimal resource usage and efficient operation.
 
 The design prioritizes simplicity, efficiency, and maintainability while delivering an engaging user experience through Furby-style language patterns and authentic Furbish phrases.
 
@@ -174,7 +174,7 @@ class FurbyResponse:
 ### Integration Testing
 - **End-to-End Flows**: Test complete query-to-response pipeline
 - **Error Scenarios**: Verify graceful handling of edge cases
-- **Performance**: Ensure response times meet Raspberry Pi requirements
+- **Performance**: Ensure reasonable response times
 
 ### Manual Testing
 - **Therapeutic Quality**: Verify responses feel supportive and appropriate
@@ -182,16 +182,16 @@ class FurbyResponse:
 - **User Experience**: Test interactive mode usability and flow
 
 ### Performance Testing
-- **Memory Usage**: Verify <50MB RAM consumption on Raspberry Pi
-- **Response Time**: Confirm <1 second response times for typical queries
+- **Memory Usage**: Verify efficient memory consumption
+- **Response Time**: Confirm reasonable response times for typical queries
 - **Resource Efficiency**: Test sustained usage without memory leaks
 
 ## Implementation Considerations
 
-### Raspberry Pi Zero 2 W Optimization
+### Performance Optimization
 - Use built-in Python libraries where possible to minimize dependencies
-- Implement lazy loading for response database
-- Optimize string operations for ARM processor efficiency
+- Implement efficient loading for response database
+- Optimize string operations for performance
 - Keep data structures simple and memory-efficient
 
 ### Furby Authenticity

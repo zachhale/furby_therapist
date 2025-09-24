@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This feature implements a CLI-based therapeutic assistant that mimics the personality and speech patterns of a Furby toy. The system will process text queries and generate therapeutic responses using simple, broad-meaning advice delivered in whimsical Furby-style language, including authentic Furbish phrases. The system operates completely offline using lightweight processing suitable for Raspberry Pi Zero 2 W hardware.
+This feature implements a CLI-based therapeutic assistant that mimics the personality and speech patterns of a Furby toy. The system will process text queries and generate therapeutic responses using simple, broad-meaning advice delivered in whimsical Furby-style language, including authentic Furbish phrases. The system operates completely offline using lightweight processing.
 
 ## Requirements
 
@@ -62,13 +62,13 @@ This feature implements a CLI-based therapeutic assistant that mimics the person
 
 ### Requirement 5
 
-**User Story:** As a user, I want the CLI assistant to run efficiently on a Raspberry Pi Zero 2 W, so that it operates smoothly within the device's limited resources.
+**User Story:** As a user, I want the CLI assistant to run efficiently, so that it operates smoothly and responsively.
 
 #### Acceptance Criteria
 
 1. WHEN processing text queries THEN the system SHALL use minimal CPU resources and complete processing quickly
-2. WHEN generating responses THEN processing SHALL complete within 1 second for typical queries on Raspberry Pi Zero 2 W
-3. WHEN running the CLI THEN it SHALL consume less than 50MB of RAM
+2. WHEN generating responses THEN processing SHALL complete within reasonable time for typical queries
+3. WHEN running the CLI THEN it SHALL use memory efficiently
 4. WHEN system resources are low THEN the assistant SHALL continue to operate without degradation
 5. WHEN processing queries THEN it SHALL use efficient string matching and response selection algorithms
-6. IF the system is under heavy load THEN response times SHALL not exceed 3 seconds on Raspberry Pi hardware
+6. IF the system is under heavy load THEN response times SHALL remain reasonable

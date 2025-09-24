@@ -1,5 +1,5 @@
 # Furby Therapist CLI Requirements
-# Using minimal dependencies for Raspberry Pi Zero 2 W compatibility
+# Using minimal dependencies for lightweight operation
 
 # No external dependencies required - using only Python standard library
 # This ensures minimal resource usage and easy deployment
