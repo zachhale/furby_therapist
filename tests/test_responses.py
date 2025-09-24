@@ -399,6 +399,215 @@ class TestResponseEngineIntegration(unittest.TestCase):
                     # Should contain Furby elements
                     self.assertTrue('*' in response.formatted_output or 
                                   'me ' in response.formatted_output.lower())
+    
+    def test_bicycle_category_responses(self):
+        """Test bicycle category responses if available."""
+        if 'bicycle' in self.engine.get_available_categories():
+            response = self.engine.get_response('bicycle')
+            
+            # Should be a valid response
+            self.assertIsInstance(response, FurbyResponse)
+            self.assertGreater(len(response.formatted_output), 10)
+            
+            # Should contain bicycle-themed content
+            bicycle_indicators = ['bike', 'bicycle', 'cycling', 'pedal', 'wheel', 'chain']
+            has_bicycle_content = any(indicator in response.formatted_output.lower() 
+                                    for indicator in bicycle_indicators)
+            self.assertTrue(has_bicycle_content, 
+                          f"Bicycle response should contain bicycle-themed content: {response.formatted_output}")
+            
+            # Should maintain therapeutic value
+            therapeutic_indicators = ['balance', 'forward', 'journey', 'progress', 'support', 'care']
+            has_therapeutic_content = any(indicator in response.formatted_output.lower() 
+                                        for indicator in therapeutic_indicators)
+            self.assertTrue(has_therapeutic_content or len(response.formatted_output) > 20,
+                          f"Bicycle response should maintain therapeutic value: {response.formatted_output}")
+            
+            # Should contain Furby elements
+            furby_indicators = ['*', 'me ', 'furby', 'wee-tah', 'ooh', 'eee']
+            has_furby_element = any(indicator in response.formatted_output.lower() 
+                                  for indicator in furby_indicators)
+            self.assertTrue(has_furby_element,
+                          f"Bicycle response should contain Furby personality: {response.formatted_output}")
+
+
+class TestBicycleResponseEngine(unittest.TestCase):
+    """Test cases specifically for bicycle-themed responses."""
+    
+    def setUp(self):
+        """Set up test fixtures with bicycle responses."""
+        # Create test responses including bicycle category
+        self.test_responses = {
+            "schema_version": "1.0",
+            "categories": {
+                "bicycle": {
+                    "keywords": ["bike", "bicycle", "cycling", "riding", "pedal", "chain", "wheel", "maintenance"],
+                    "responses": [
+                        "Wee-tah! Me love bike-talk! *excited wheel spin sound* Life is like riding bicycle - you keep balance by moving forward! *encouraging chirp*",
+                        "Ooh-lah! Cycling makes Furby think of life journey! *gentle pedal sound* Sometimes uphill is hard, but downhill joy comes after! *supportive trill*"
+                    ],
+                    "furby_sounds": ["*wheel spin*", "*pedal sound*", "*chain click*", "*spoke ping*", "*bell ring*", "wee-tah!", "ooh-lah!"],
+                    "furbish_phrases": [
+                        ["Dah wheel-loh", "keep rolling forward"],
+                        ["Kah pedal-may", "pedal with love"],
+                        ["U-nye cycle-way", "you are strong rider"]
+                    ]
+                },
+                "fallback": {
+                    "keywords": [],
+                    "responses": ["Fallback response! *gentle chirp*"],
+                    "furby_sounds": ["*chirp*"],
+                    "furbish_phrases": [["Dah koh-koh", "it's okay"]]
+                }
+            }
+        }
+        
+        # Create temporary file with test data
+        self.temp_file = tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False)
+        json.dump(self.test_responses, self.temp_file)
+        self.temp_file.close()
+        
+        self.engine = ResponseEngine(self.temp_file.name)
+    
+    def tearDown(self):
+        """Clean up test fixtures."""
+        Path(self.temp_file.name).unlink()
+    
+    def test_bicycle_category_loaded(self):
+        """Test that bicycle category is loaded correctly."""
+        self.assertIn('bicycle', self.engine.categories)
+        
+        bicycle_category = self.engine.categories['bicycle']
+        self.assertEqual(bicycle_category.name, 'bicycle')
+        self.assertIn('bike', bicycle_category.keywords)
+        self.assertIn('cycling', bicycle_category.keywords)
+        self.assertGreater(len(bicycle_category.responses), 0)
+        self.assertGreater(len(bicycle_category.furby_sounds), 0)
+        self.assertGreater(len(bicycle_category.furbish_phrases), 0)
+    
+    def test_bicycle_response_generation(self):
+        """Test generating bicycle-themed responses."""
+        response = self.engine.get_response('bicycle')
+        
+        self.assertIsInstance(response, FurbyResponse)
+        self.assertIsNotNone(response.formatted_output)
+        
+        # Should contain bicycle-themed content
+        self.assertTrue(any(word in response.formatted_output.lower() 
+                          for word in ['bike', 'bicycle', 'cycling', 'wheel', 'pedal']))
+    
+    def test_bicycle_therapeutic_metaphors(self):
+        """Test that bicycle responses contain therapeutic metaphors."""
+        # Generate multiple responses to test different metaphors
+        responses = []
+        for _ in range(10):
+            response = self.engine.get_response('bicycle')
+            responses.append(response.formatted_output.lower())
+        
+        # Check for therapeutic bicycle metaphors
+        therapeutic_concepts = ['balance', 'forward', 'journey', 'uphill', 'downhill', 'progress']
+        
+        has_therapeutic_metaphor = any(
+            any(concept in response for concept in therapeutic_concepts)
+            for response in responses
+        )
+        
+        self.assertTrue(has_therapeutic_metaphor, 
+                       "Bicycle responses should contain therapeutic metaphors")
+    
+    def test_bicycle_furby_sounds(self):
+        """Test that bicycle responses use appropriate Furby sounds."""
+        response = self.engine.get_response('bicycle')
+        
+        # Should contain bicycle-themed Furby sounds
+        bicycle_sounds = ['wheel spin', 'pedal sound', 'chain click', 'spoke ping', 'bell ring']
+        
+        has_bicycle_sound = any(sound.replace(' ', '') in response.formatted_output.replace(' ', '').lower() 
+                               for sound in bicycle_sounds)
+        
+        # Should have some kind of sound effect
+        has_sound_effect = '*' in response.formatted_output
+        
+        self.assertTrue(has_sound_effect, "Bicycle response should contain sound effects")
+    
+    def test_bicycle_furbish_phrases(self):
+        """Test bicycle-specific Furbish phrases."""
+        bicycle_category = self.engine.categories['bicycle']
+        
+        # Check that bicycle-specific Furbish phrases exist
+        furbish_phrases = bicycle_category.furbish_phrases
+        self.assertGreater(len(furbish_phrases), 0)
+        
+        # Check that they're cycling-themed
+        cycling_themed_phrases = ['wheel-loh', 'pedal-may', 'cycle-way']
+        
+        has_cycling_furbish = any(
+            any(theme in phrase[0] for theme in cycling_themed_phrases)
+            for phrase in furbish_phrases
+        )
+        
+        self.assertTrue(has_cycling_furbish, 
+                       "Should have cycling-themed Furbish phrases")
+    
+    def test_bicycle_response_variety(self):
+        """Test that bicycle responses have good variety."""
+        responses = []
+        for _ in range(20):
+            response = self.engine.get_response('bicycle')
+            responses.append(response.formatted_output)
+        
+        # Should have some variety in responses
+        unique_responses = set(responses)
+        self.assertGreater(len(unique_responses), 1, 
+                          "Should have variety in bicycle responses")
+    
+    def test_bicycle_maintains_therapeutic_value(self):
+        """Test that bicycle easter eggs maintain therapeutic value."""
+        response = self.engine.get_response('bicycle')
+        
+        # Should not contain harmful or negative language
+        harmful_words = ['stupid', 'wrong', 'bad', 'failure', 'worthless', 'hate']
+        for word in harmful_words:
+            self.assertNotIn(word, response.formatted_output.lower())
+        
+        # Should be supportive and positive
+        self.assertGreater(len(response.formatted_output), 20)
+        
+        # Should maintain Furby personality
+        self.assertTrue('*' in response.formatted_output or 
+                       'me ' in response.formatted_output.lower() or
+                       any(exclamation in response.formatted_output 
+                           for exclamation in ['wee-tah', 'ooh-lah', 'eee']))
+    
+    def test_bicycle_clean_version_creation(self):
+        """Test that bicycle responses create appropriate clean versions."""
+        response = self.engine.get_response('bicycle')
+        
+        self.assertIsNotNone(response.clean_version)
+        self.assertIsInstance(response.clean_version, str)
+        self.assertGreater(len(response.clean_version), 0)
+        
+        # Clean version should maintain therapeutic bicycle content
+        self.assertTrue(any(word in response.clean_version.lower() 
+                          for word in ['bike', 'bicycle', 'cycling', 'balance', 'forward', 'journey']))
+    
+    def test_bicycle_repeat_functionality(self):
+        """Test repeat functionality with bicycle responses."""
+        # Generate initial bicycle response
+        original = self.engine.get_response('bicycle')
+        
+        # Get repeat response
+        repeat = self.engine.get_repeat_response()
+        
+        self.assertIsNotNone(repeat)
+        self.assertIsInstance(repeat, FurbyResponse)
+        
+        # Repeat should maintain bicycle therapeutic content
+        self.assertTrue(any(word in repeat.formatted_output.lower() 
+                          for word in ['bike', 'bicycle', 'cycling', 'balance', 'forward']))
+        
+        # Should not have Furbish in repeat
+        self.assertIsNone(repeat.furbish_phrase)
 
 
 if __name__ == '__main__':

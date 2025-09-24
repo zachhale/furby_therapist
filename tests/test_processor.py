@@ -305,6 +305,54 @@ class TestQueryProcessor(unittest.TestCase):
         self.assertTrue(self.processor.is_repeat_request("repeat"))
         self.assertTrue(self.processor.is_repeat_request("what"))
         self.assertTrue(self.processor.is_repeat_request("again"))
+    
+    def test_detect_emotion_enthusiastic_bicycle(self):
+        """Test detection of enthusiastic emotion for bicycle keywords."""
+        emotion, confidence = self.processor.detect_emotion("love my bike cycling")
+        self.assertEqual(emotion, "enthusiastic")
+        self.assertGreater(confidence, 0)
+        
+        emotion, confidence = self.processor.detect_emotion("bicycle maintenance wheel")
+        self.assertEqual(emotion, "enthusiastic")
+        self.assertGreater(confidence, 0)
+    
+    def test_bicycle_keyword_extraction(self):
+        """Test that bicycle-related keywords are properly extracted."""
+        keywords = self.processor.extract_keywords("my bike needs chain maintenance")
+        self.assertIn("bike", keywords)
+        self.assertIn("chain", keywords)
+        self.assertIn("maintenance", keywords)
+        
+        keywords = self.processor.extract_keywords("cycling is great exercise")
+        self.assertIn("cycling", keywords)
+        self.assertIn("great", keywords)
+        self.assertIn("exercise", keywords)
+    
+    def test_bicycle_query_processing(self):
+        """Test complete processing of bicycle-related queries."""
+        query = "I love cycling and bike maintenance!"
+        result = self.processor.process_query(query)
+        
+        self.assertEqual(result.original_text, query)
+        self.assertIn("cycling", result.keywords)
+        self.assertIn("bike", result.keywords)
+        self.assertIn("maintenance", result.keywords)
+        self.assertEqual(result.detected_emotion, "enthusiastic")
+        self.assertGreater(result.confidence, 0)
+    
+    def test_bicycle_mixed_emotions(self):
+        """Test bicycle keywords mixed with other emotions."""
+        # Bicycle + positive emotions should still detect enthusiastic
+        emotion, confidence = self.processor.detect_emotion("happy bike riding")
+        self.assertEqual(emotion, "enthusiastic")
+        
+        # Multiple bicycle keywords should have higher confidence
+        emotion1, conf1 = self.processor.detect_emotion("bike")
+        emotion2, conf2 = self.processor.detect_emotion("bike cycling pedal")
+        
+        self.assertEqual(emotion1, "enthusiastic")
+        self.assertEqual(emotion2, "enthusiastic")
+        self.assertGreaterEqual(conf2, conf1)
 
 
 if __name__ == '__main__':

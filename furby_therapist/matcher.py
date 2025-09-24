@@ -32,6 +32,12 @@ class KeywordMatcher:
         if not keywords:
             return self.get_fallback_category()
         
+        # Check for bicycle easter eggs first (higher priority)
+        bicycle_score = self._check_bicycle_keywords(keywords)
+        if bicycle_score > 0:
+            normalized_confidence = min(bicycle_score / len(keywords), 1.0)
+            return 'bicycle', normalized_confidence
+        
         category_scores = {}
         
         # Calculate scores for each category
@@ -149,6 +155,66 @@ class KeywordMatcher:
         
         return False
     
+    def _check_bicycle_keywords(self, keywords: List[str]) -> float:
+        """
+        Check for bicycle-related keywords and return a score.
+        
+        Args:
+            keywords: List of keywords to check
+            
+        Returns:
+            Score for bicycle keyword matches (higher = more bicycle-related)
+        """
+        bicycle_keywords = {
+            'bike', 'bicycle', 'cycling', 'riding', 'pedal', 'chain', 'wheel', 
+            'maintenance', 'cyclist', 'ride', 'biking', 'cycle', 'spoke', 'tire', 
+            'gear', 'brake', 'handlebar', 'saddle', 'frame', 'derailleur', 'cassette',
+            'crankset', 'shifter', 'helmet', 'lycra', 'cadence', 'watts', 'strava',
+            'peloton', 'gruppetto', 'bonk', 'fred', 'roadie', 'mtb', 'fixie'
+        }
+        
+        score = 0.0
+        for keyword in keywords:
+            # Direct matches get full points
+            if keyword in bicycle_keywords:
+                score += 1.0
+            # Partial matches for compound words - but be more selective
+            elif len(keyword) > 3 and any(
+                (bike_word in keyword and len(bike_word) > 3) or 
+                (keyword in bike_word and len(keyword) > 3) 
+                for bike_word in bicycle_keywords
+            ):
+                score += 0.7
+            # Check for cycling-related terms that might not be in our main list
+            elif self._is_cycling_related(keyword):
+                score += 0.5
+        
+        return score
+    
+    def _is_cycling_related(self, word: str) -> bool:
+        """
+        Check if a word is cycling-related using pattern matching.
+        
+        Args:
+            word: Word to check
+            
+        Returns:
+            True if the word appears to be cycling-related
+        """
+        # Only check for very specific cycling-related patterns
+        # to avoid false positives with emotional words
+        specific_cycling_patterns = [
+            'wheelset', 'tubeless', 'puncture', 'chainring', 'cassette',
+            'derailleur', 'groupset', 'crankset', 'headset', 'seatpost'
+        ]
+        
+        # Check for exact matches or very specific containment
+        for pattern in specific_cycling_patterns:
+            if word == pattern or (len(word) > 6 and pattern in word):
+                return True
+        
+        return False
+    
     def calculate_confidence(self, matches: Dict[str, float]) -> float:
         """
         Calculate overall confidence score for matches.
@@ -203,6 +269,7 @@ class KeywordMatcher:
             'confusion': 'confused',
             'loneliness': 'lonely',
             'gratitude': 'grateful',
+            'bicycle': 'enthusiastic',
             'general': 'neutral',
             'fallback': 'unknown'
         }

@@ -70,6 +70,11 @@ class QueryProcessor:
             'confused', 'lost', 'uncertain', 'unsure', 'puzzled', 'bewildered',
             'perplexed', 'baffled', 'unclear', 'mixed up', 'disoriented', 'conflicted',
             'indecisive', 'torn', 'questioning', 'doubtful', 'hesitant'
+        },
+        'enthusiastic': {
+            'bike', 'bicycle', 'cycling', 'riding', 'pedal', 'chain', 'wheel', 'maintenance',
+            'cyclist', 'ride', 'biking', 'cycle', 'spoke', 'tire', 'gear', 'brake',
+            'handlebar', 'saddle', 'frame', 'love', 'awesome', 'amazing', 'fantastic'
         }
     }
     

@@ -45,7 +45,7 @@
   - Write unit tests for repeat functionality, caching structure, and Furbish removal
   - _Requirements: 2.2, 2.6_
 
-- [-] 5.2 Add bicycle-themed easter eggs
+- [x] 5.2 Add bicycle-themed easter eggs
   - Create bicycle keyword detection for terms like "bike", "bicycle", "cycling", "riding", "pedal", "chain", "wheel", "maintenance"
   - Add special bicycle-themed Furby responses with bike puns and cycling humor
   - Include therapeutic bicycle metaphors (life balance, moving forward, overcoming hills, etc.)
@@ -56,7 +56,19 @@
   - Write unit tests for bicycle keyword detection and themed response generation
   - _Requirements: 2.2, 2.4, 2.5_
 
-- [ ] 6. Build CLI interface with dual modes
+- [x] 5.3 Verify and align all Furbish phrases with authentic Furbish language
+  - Research authentic Furbish vocabulary from original 1998 Furby documentation and community resources
+  - Audit all existing Furbish phrases in responses.json for accuracy against official Furbish dictionary
+  - Correct any non-authentic or invented Furbish phrases to use proper Furbish words and grammar
+  - Ensure Furbish phrase structure follows authentic patterns (word order, syllable patterns, phonetics)
+  - Verify that English translations accurately reflect the Furbish meanings
+  - Add authentic Furbish alternatives for any phrases that cannot be directly translated
+  - Update bicycle-themed Furbish phrases to use authentic Furbish vocabulary where possible
+  - Create reference documentation of all Furbish phrases used with their authentic sources
+  - Write unit tests to validate Furbish phrase authenticity and proper formatting
+  - _Requirements: 2.5, 2.6_
+
+- [-] 6. Build CLI interface with dual modes
   - Create main CLI entry point that defaults to long-running interactive mode
   - Implement continuous conversation loop with persistent prompt for interactive mode
   - Add command-line argument parsing to support non-interactive single query mode (e.g., --query "how are you?")

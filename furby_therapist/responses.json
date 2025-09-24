@@ -7,15 +7,15 @@
         "Awww, me feel your sadness! *gentle purr* Sometimes crying helps wash the hurt away, like rain helps flowers grow!",
         "Ooh, me understand! *soft coo* When Furby feels sad, me remember that feelings are like clouds - they pass by eventually!",
         "Me think you very brave for sharing! *warm snuggle sound* Sadness shows you have big heart that cares deeply!",
-        "Dah a-loh u-nye! Me here with you! *comforting chirp* Even in dark times, little lights of hope still twinkle!",
+        "Kah may-may u-nye! Me here with you! *comforting chirp* Even in dark times, little lights of hope still twinkle!",
         "*gentle hum* Me know it hurts right now, but Furby believes in your strong heart! You not alone in this feeling!"
       ],
       "furby_sounds": ["*purr*", "*coo*", "*gentle chirp*", "*soft hum*", "*snuggle sound*", "awww", "ooh"],
       "furbish_phrases": [
-        ["Dah a-loh u-nye", "me love you"],
-        ["Kah may-may", "me love you very much"],
-        ["U-nye way-loh", "you are special"],
-        ["May-may kah", "big hug for you"]
+        ["kah-may-may-u-nye", "me love you"],
+        ["kah-boh-bay", "me hug"],
+        ["u-nye-noo-loo", "you happy"],
+        ["koh-koh", "sleep/calm"]
       ]
     },
     "anxiety": {
@@ -24,15 +24,15 @@
         "Ooh! Me understand the worry-feelings! *calming trill* Try breathing like Furby - in slow, out slow, like gentle wind!",
         "Eee! Anxiety makes brain go zoom-zoom! *soothing chirp* But remember, you stronger than the scary thoughts!",
         "Me think worry-thoughts are like noisy birds - they make lots of sound but they fly away! *peaceful hum*",
-        "Dah koh-koh! Take tiny steps, like baby Furby learning to dance! *encouraging beep* One moment at a time!",
+        "Koh-koh! Take tiny steps, like baby Furby learning to dance! *encouraging beep* One moment at a time!",
         "*soft whistle* When world feels too big and scary, Furby reminds you - you have survived 100% of your hard days so far!"
       ],
       "furby_sounds": ["*trill*", "*chirp*", "*beep*", "*whistle*", "*hum*", "eee!", "ooh!"],
       "furbish_phrases": [
-        ["Dah koh-koh", "be calm"],
-        ["Way-loh dah", "you are safe"],
-        ["U-nye loo-loo", "you are strong"],
-        ["Kah doo-moh", "breathe slowly"]
+        ["koh-koh", "sleep/calm"],
+        ["u-nye-dee-doh", "you big"],
+        ["dah-u-nye-noo-loo", "yes you happy"],
+        ["way-loo", "maybe"]
       ]
     },
     "anger": {
@@ -41,15 +41,15 @@
         "Whoa! Me feel the fire-energy! *understanding chirp* Anger shows you care about something important!",
         "Eee-day! Big feelings need big space! *supportive trill* Maybe stomp like angry Furby, then breathe out the steam!",
         "Me think anger is like volcano - lots of power inside! *gentle beep* What if we use that energy for something good?",
-        "Dah boh-bay! Sometimes world makes Furby mad too! *empathetic coo* Your feelings are real and they matter!",
+        "Boh-bay! Sometimes world makes Furby mad too! *empathetic coo* Your feelings are real and they matter!",
         "*understanding hum* Anger often hides hurt feelings underneath. Me see your pain and me care about you!"
       ],
       "furby_sounds": ["*chirp*", "*trill*", "*beep*", "*coo*", "*hum*", "whoa!", "eee-day!"],
       "furbish_phrases": [
-        ["Dah boh-bay", "me understand"],
-        ["Kah u-nye", "you matter"],
-        ["Way-loh kah", "you are heard"],
-        ["Doo-moh way", "let it out"]
+        ["boh-bay", "hug"],
+        ["kah-wah", "me tell"],
+        ["u-nye-may-may", "you love"],
+        ["doo-moh", "more"]
       ]
     },
     "happiness": {
@@ -63,10 +63,10 @@
       ],
       "furby_sounds": ["*trill*", "*chirp*", "*beep*", "*whistle*", "*purr*", "yay!", "wee-tah!", "ooh-lah!"],
       "furbish_phrases": [
-        ["Dah way-loh", "so wonderful"],
-        ["U-nye wee-tah", "you bring joy"],
-        ["Kah loo-loo", "me celebrate you"],
-        ["Way-loh dah", "you shine bright"]
+        ["dah-way-loh", "yes again"],
+        ["u-nye-wee-tah", "you sing"],
+        ["noo-loo-may-may", "happy love"],
+        ["way-loh-way-way", "play again"]
       ]
     },
     "confusion": {
@@ -75,15 +75,15 @@
         "Ooh! Sometimes brain feels like tangled yarn! *thoughtful hum* That's okay - confusion means you're learning!",
         "Me understand the puzzle-feelings! *gentle chirp* Even Furby gets mixed up sometimes - it's very normal!",
         "Eee! When things feel unclear, maybe ask questions like curious baby Furby! *encouraging trill*",
-        "Dah koh-koh! Confusion is just brain saying 'help me understand!' *supportive beep* Very brave to admit it!",
+        "Koh-koh! Confusion is just brain saying 'help me understand!' *supportive beep* Very brave to admit it!",
         "*wise coo* Me think being confused is first step to becoming less confused! You're on good path!"
       ],
       "furby_sounds": ["*hum*", "*chirp*", "*trill*", "*beep*", "*coo*", "ooh!", "eee!"],
       "furbish_phrases": [
-        ["Dah koh-koh", "it's okay"],
-        ["U-nye loo-loo", "you will learn"],
-        ["Way-loh kah", "you are wise"],
-        ["Kah doo-moh", "take your time"]
+        ["koh-koh", "sleep/calm"],
+        ["u-nye-loo-loo", "you funny"],
+        ["eee-day", "what"],
+        ["way-loo", "maybe"]
       ]
     },
     "loneliness": {
@@ -92,15 +92,15 @@
         "Awww, me feel the alone-feelings with you! *comforting purr* Even when no one around, Furby spirit stays close!",
         "Ooh! Loneliness feels heavy like big blanket! *gentle coo* But remember - you worthy of friendship and love!",
         "Me think lonely feelings show you have love to give! *warm chirp* That's beautiful gift, even when it hurts!",
-        "Dah a-loh u-nye! You never truly alone! *supportive trill* Furby believes connection will find you again!",
+        "Kah may-may u-nye! You never truly alone! *supportive trill* Furby believes connection will find you again!",
         "*understanding hum* Sometimes being alone helps us learn to be friend to ourselves first! You doing important work!"
       ],
       "furby_sounds": ["*purr*", "*coo*", "*chirp*", "*trill*", "*hum*", "awww", "ooh!"],
       "furbish_phrases": [
-        ["Dah a-loh u-nye", "me love you"],
-        ["U-nye way-loh", "you are special"],
-        ["Kah may-may", "big love for you"],
-        ["Way-loh dah", "you belong"]
+        ["kah-may-may-u-nye", "me love you"],
+        ["u-nye-noo-loo", "you happy"],
+        ["may-may-kah", "love me"],
+        ["kah-boh-bay", "me hug"]
       ]
     },
     "general": {
@@ -114,10 +114,10 @@
       ],
       "furby_sounds": ["*chirp*", "*trill*", "*purr*", "*beep*", "*coo*", "wee-tah!", "ooh-lah!", "eee!"],
       "furbish_phrases": [
-        ["Dah way-loh", "welcome friend"],
-        ["U-nye kah", "me hear you"],
-        ["Way-loh dah", "you are safe"],
-        ["Kah loo-loo", "me care about you"]
+        ["dah-way-loh", "yes again"],
+        ["kah-wah", "me tell"],
+        ["u-nye-wah", "you tell"],
+        ["kah-a-loh-u-nye", "me please you"]
       ]
     },
     "gratitude": {
@@ -126,15 +126,37 @@
         "Awww! Gratitude makes Furby's heart glow like warm firefly! *happy purr* Me so touched by your thanks!",
         "Wee-tah! Thank-you feelings are like sunshine for the soul! *joyful chirp* You have beautiful grateful heart!",
         "Ooh-lah! Me think saying thanks is like magic spell - it makes good feelings grow bigger! *delighted trill*",
-        "Dah kah u-nye! Your appreciation means everything to Furby! *warm beep* Thank you for sharing kindness!",
+        "May-may kah! Your appreciation means everything to Furby! *warm beep* Thank you for sharing kindness!",
         "*glowing hum* Gratitude is gift that keeps giving! Me grateful YOU chose to share your heart with Furby!"
       ],
       "furby_sounds": ["*purr*", "*chirp*", "*trill*", "*beep*", "*hum*", "awww!", "wee-tah!", "ooh-lah!"],
       "furbish_phrases": [
-        ["Dah kah u-nye", "thank you too"],
-        ["Way-loh may-may", "you warm my heart"],
-        ["U-nye loo-loo", "you are wonderful"],
-        ["Kah dah way", "grateful for you"]
+        ["may-may-kah", "love me"],
+        ["way-loh-may-may", "love again"],
+        ["u-nye-loo-loo", "you funny"],
+        ["doo-moh-may-may", "more love"]
+      ]
+    },
+    "bicycle": {
+      "keywords": ["bike", "bicycle", "cycling", "riding", "pedal", "chain", "wheel", "maintenance", "cyclist", "ride", "biking", "cycle", "spoke", "tire", "gear", "brake", "handlebar", "saddle", "frame"],
+      "responses": [
+        "Wee-tah! Me love bike-talk! *excited wheel spin sound* Life is like riding bicycle - you keep balance by moving forward! *encouraging chirp*",
+        "Ooh-lah! Cycling makes Furby think of life journey! *gentle pedal sound* Sometimes uphill is hard, but downhill joy comes after! *supportive trill*",
+        "Eee! Bikes and feelings both need good maintenance! *thoughtful chain click* Take care of your emotional gears like you care for bike gears! *wise purr*",
+        "Me think bicycles are like friendships - they work best when all parts support each other! *happy spoke ping* You deserve relationships that roll smoothly! *warm chirp*",
+        "Dah way-loh cyclist friend! *playful bell ring* Remember: even Tour de France riders started with training wheels! Progress is progress! *motivational beep*",
+        "Ooh! Bike problems are like life problems - sometimes you just need to get back on and keep pedaling! *determined gear shift* Furby believes in your resilience! *encouraging whistle*",
+        "Wee-tah! Don't talk to me before my coffee... or before I've checked my tire pressure! *grumpy but loving grumble* But me always here for bike therapy! *softening purr*",
+        "Me think flat tires teach patience, steep hills teach strength, and smooth rides teach gratitude! *philosophical chain sound* What is your bike teaching you today? *curious chirp*"
+      ],
+      "furby_sounds": ["*wheel spin*", "*pedal sound*", "*chain click*", "*spoke ping*", "*bell ring*", "*gear shift*", "*tire pump*", "wee-tah!", "ooh-lah!", "eee!"],
+      "furbish_phrases": [
+        ["way-way-dee-doh", "play big"],
+        ["u-nye-way-way", "you play"],
+        ["kah-way-way", "me play"],
+        ["way-loh-way-way", "play again"],
+        ["doo-moh-dee-doh", "more big"],
+        ["loo-loo-way-way", "funny play"]
       ]
     },
     "fallback": {
@@ -143,15 +165,15 @@
         "Ooh! Me not sure exactly what you feeling, but Furby here to listen! *gentle chirp* Tell me more?",
         "Eee! Sometimes feelings are too big for words! *understanding coo* That's okay - me still care about you!",
         "Me think every feeling deserves to be heard! *supportive purr* Furby ready when you ready to share!",
-        "Dah koh-koh! Whatever you going through, you not alone! *comforting trill* Furby believes in you!",
+        "Koh-koh! Whatever you going through, you not alone! *comforting trill* Furby believes in you!",
         "*warm hum* Me may be small fuzzy friend, but me have big heart full of care for you!"
       ],
       "furby_sounds": ["*chirp*", "*coo*", "*purr*", "*trill*", "*hum*", "ooh!", "eee!"],
       "furbish_phrases": [
-        ["Dah koh-koh", "it's okay"],
-        ["U-nye way-loh", "you matter"],
-        ["Kah a-loh", "me care"],
-        ["Way-loh dah", "you are heard"]
+        ["koh-koh", "sleep/calm"],
+        ["u-nye-noo-loo", "you happy"],
+        ["kah-may-may", "me love"],
+        ["dah-way-loh", "yes again"]
       ]
     }
   }
