@@ -2,6 +2,7 @@
 Keyword matcher for categorizing user queries.
 """
 
+import logging
 from typing import Dict, List, Tuple, Optional
 from .database import ResponseDatabase
 from .models import ResponseCategory, QueryAnalysis
@@ -21,7 +22,7 @@ class KeywordMatcher:
     
     def match_category(self, keywords: List[str]) -> Tuple[str, float]:
         """
-        Determine the best response category based on input keywords.
+        Determine the best response category based on input keywords with error handling.
         
         Args:
             keywords: List of normalized keywords from user input
@@ -29,34 +30,63 @@ class KeywordMatcher:
         Returns:
             Tuple of (category_name, confidence_score)
         """
-        if not keywords:
+        try:
+            # Validate input
+            if not keywords or not isinstance(keywords, list):
+                logging.debug("Empty or invalid keywords provided to matcher")
+                return self.get_fallback_category()
+            
+            # Filter out invalid keywords
+            valid_keywords = [
+                kw for kw in keywords 
+                if isinstance(kw, str) and len(kw) > 0 and len(kw) < 100
+            ]
+            
+            if not valid_keywords:
+                logging.debug("No valid keywords after filtering")
+                return self.get_fallback_category()
+            
+            # Limit keywords to prevent excessive processing
+            if len(valid_keywords) > 20:
+                logging.warning(f"Too many keywords ({len(valid_keywords)}), truncating to 20")
+                valid_keywords = valid_keywords[:20]
+            
+            # Check for bicycle easter eggs first (higher priority)
+            bicycle_score = self._check_bicycle_keywords(valid_keywords)
+            if bicycle_score > 0:
+                normalized_confidence = min(bicycle_score / len(valid_keywords), 1.0)
+                logging.debug(f"Bicycle category matched with confidence {normalized_confidence:.2f}")
+                return 'bicycle', normalized_confidence
+            
+            category_scores = {}
+            
+            # Calculate scores for each category with error handling
+            for category_name, category in self.matching_categories.items():
+                try:
+                    score = self._calculate_category_score(valid_keywords, category.keywords)
+                    if score > 0:
+                        category_scores[category_name] = score
+                except Exception as e:
+                    logging.warning(f"Error calculating score for category {category_name}: {e}")
+                    continue
+            
+            if not category_scores:
+                logging.debug("No category matches found, using fallback")
+                return self.get_fallback_category()
+            
+            # Find the category with the highest score
+            best_category = max(category_scores.items(), key=lambda x: x[1])
+            category_name, confidence = best_category
+            
+            # Normalize confidence to 0-1 range
+            normalized_confidence = min(confidence / len(valid_keywords), 1.0)
+            
+            logging.debug(f"Best match: {category_name} with confidence {normalized_confidence:.2f}")
+            return category_name, normalized_confidence
+            
+        except Exception as e:
+            logging.error(f"Error in match_category: {e}")
             return self.get_fallback_category()
-        
-        # Check for bicycle easter eggs first (higher priority)
-        bicycle_score = self._check_bicycle_keywords(keywords)
-        if bicycle_score > 0:
-            normalized_confidence = min(bicycle_score / len(keywords), 1.0)
-            return 'bicycle', normalized_confidence
-        
-        category_scores = {}
-        
-        # Calculate scores for each category
-        for category_name, category in self.matching_categories.items():
-            score = self._calculate_category_score(keywords, category.keywords)
-            if score > 0:
-                category_scores[category_name] = score
-        
-        if not category_scores:
-            return self.get_fallback_category()
-        
-        # Find the category with the highest score
-        best_category = max(category_scores.items(), key=lambda x: x[1])
-        category_name, confidence = best_category
-        
-        # Normalize confidence to 0-1 range
-        normalized_confidence = min(confidence / len(keywords), 1.0)
-        
-        return category_name, normalized_confidence
     
     def _calculate_category_score(self, user_keywords: List[str], category_keywords: List[str]) -> float:
         """

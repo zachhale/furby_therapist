@@ -216,11 +216,11 @@ class TestCLIModeIntegration(unittest.TestCase):
     def test_interactive_mode_flag(self):
         """Test interactive mode flag management."""
         # Initially should be False
-        self.assertFalse(self.cli.interactive_mode)
+        self.assertFalse(self.cli._interactive_mode_active)
         
         # Should be able to set it
-        self.cli.interactive_mode = True
-        self.assertTrue(self.cli.interactive_mode)
+        self.cli._interactive_mode_active = True
+        self.assertTrue(self.cli._interactive_mode_active)
 
 
 if __name__ == '__main__':

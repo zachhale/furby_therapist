@@ -4,9 +4,11 @@ Query processor for normalizing and preparing user input.
 
 import re
 import string
+import logging
 from typing import List, Optional
 
 from .models import QueryAnalysis
+from .error_handler import validate_input
 
 
 class QueryProcessor:
@@ -70,7 +72,7 @@ class QueryProcessor:
     
     def normalize_text(self, input_text: str) -> str:
         """
-        Clean and standardize input text.
+        Clean and standardize input text with error handling.
         
         Args:
             input_text: Raw user input text
@@ -78,26 +80,41 @@ class QueryProcessor:
         Returns:
             Normalized text (lowercase, no punctuation, cleaned whitespace)
         """
-        if not input_text or not input_text.strip():
-            return ""
-        
-        # Convert to lowercase
-        text = input_text.lower()
-        
-        # Remove punctuation except apostrophes (to preserve contractions)
-        text = re.sub(r"[^\w\s']", " ", text)
-        
-        # Handle contractions by removing apostrophes
-        text = text.replace("'", "")
-        
-        # Remove extra whitespace and normalize
-        text = re.sub(r'\s+', ' ', text).strip()
-        
-        return text
+        try:
+            if not input_text or not input_text.strip():
+                return ""
+            
+            # Validate input type
+            if not isinstance(input_text, str):
+                logging.warning(f"normalize_text received non-string input: {type(input_text)}")
+                return ""
+            
+            # Check for excessively long input
+            if len(input_text) > 10000:  # Prevent memory issues
+                logging.warning(f"Input text too long: {len(input_text)} characters")
+                input_text = input_text[:1000]  # Truncate to reasonable length
+            
+            # Convert to lowercase
+            text = input_text.lower()
+            
+            # Remove punctuation except apostrophes (to preserve contractions)
+            text = re.sub(r"[^\w\s']", " ", text)
+            
+            # Handle contractions by removing apostrophes
+            text = text.replace("'", "")
+            
+            # Remove extra whitespace and normalize
+            text = re.sub(r'\s+', ' ', text).strip()
+            
+            return text
+            
+        except Exception as e:
+            logging.error(f"Error normalizing text: {e}")
+            return ""  # Return empty string on error
     
     def extract_keywords(self, text: str) -> List[str]:
         """
-        Identify meaningful keywords from normalized text.
+        Identify meaningful keywords from normalized text with error handling.
         
         Args:
             text: Normalized text to extract keywords from
@@ -105,27 +122,44 @@ class QueryProcessor:
         Returns:
             List of meaningful keywords (stop words filtered out)
         """
-        if not text:
+        try:
+            if not text or not isinstance(text, str):
+                return []
+            
+            # Split into words with error handling
+            words = text.split()
+            
+            # Limit number of words to prevent excessive processing
+            if len(words) > 100:
+                logging.warning(f"Too many words in input: {len(words)}, truncating")
+                words = words[:100]
+            
+            # Filter out stop words and very short words
+            keywords = []
+            for word in words:
+                if (word not in self.STOP_WORDS and 
+                    len(word) > 2 and 
+                    len(word) < 50 and  # Prevent extremely long words
+                    word.isalnum()):  # Only alphanumeric words
+                    keywords.append(word)
+            
+            # Remove duplicates while preserving order
+            seen = set()
+            unique_keywords = []
+            for keyword in keywords:
+                if keyword not in seen:
+                    seen.add(keyword)
+                    unique_keywords.append(keyword)
+            
+            # Limit number of keywords to prevent excessive processing
+            if len(unique_keywords) > 20:
+                unique_keywords = unique_keywords[:20]
+            
+            return unique_keywords
+            
+        except Exception as e:
+            logging.error(f"Error extracting keywords: {e}")
             return []
-        
-        # Split into words
-        words = text.split()
-        
-        # Filter out stop words and very short words
-        keywords = [
-            word for word in words 
-            if word not in self.STOP_WORDS and len(word) > 2
-        ]
-        
-        # Remove duplicates while preserving order
-        seen = set()
-        unique_keywords = []
-        for keyword in keywords:
-            if keyword not in seen:
-                seen.add(keyword)
-                unique_keywords.append(keyword)
-        
-        return unique_keywords
     
     def detect_emotion(self, text: str) -> tuple[str, float]:
         """
@@ -205,7 +239,7 @@ class QueryProcessor:
     
     def process_query(self, input_text: str) -> QueryAnalysis:
         """
-        Complete processing pipeline for user query.
+        Complete processing pipeline for user query with comprehensive error handling.
         
         Args:
             input_text: Raw user input
@@ -213,20 +247,50 @@ class QueryProcessor:
         Returns:
             QueryAnalysis object with all extracted information
         """
-        # Normalize the text
-        normalized = self.normalize_text(input_text)
-        
-        # Extract keywords
-        keywords = self.extract_keywords(normalized)
-        
-        # Detect emotion
-        emotion, confidence = self.detect_emotion(normalized)
-        
-        return QueryAnalysis(
-            original_text=input_text,
-            normalized_text=normalized,
-            keywords=keywords,
-            detected_emotion=emotion,
-            confidence=confidence,
-            category="general"  # Will be updated by matcher
-        )
+        try:
+            # Validate input first
+            is_valid, validation_error = validate_input(input_text, max_length=1000)
+            if not is_valid:
+                logging.warning(f"Query validation failed: {validation_error}")
+                # Return minimal analysis for invalid input
+                return QueryAnalysis(
+                    original_text=input_text or "",
+                    normalized_text="",
+                    keywords=[],
+                    detected_emotion="neutral",
+                    confidence=0.0,
+                    category="fallback"
+                )
+            
+            # Normalize the text
+            normalized = self.normalize_text(input_text)
+            
+            # Extract keywords
+            keywords = self.extract_keywords(normalized)
+            
+            # Detect emotion
+            emotion, confidence = self.detect_emotion(normalized)
+            
+            # Log processing results for debugging
+            logging.debug(f"Query processed: emotion={emotion}, keywords={len(keywords)}, confidence={confidence:.2f}")
+            
+            return QueryAnalysis(
+                original_text=input_text,
+                normalized_text=normalized,
+                keywords=keywords,
+                detected_emotion=emotion,
+                confidence=confidence,
+                category="general"  # Will be updated by matcher
+            )
+            
+        except Exception as e:
+            logging.error(f"Error processing query: {e}")
+            # Return safe fallback analysis
+            return QueryAnalysis(
+                original_text=input_text or "",
+                normalized_text="",
+                keywords=[],
+                detected_emotion="neutral",
+                confidence=0.0,
+                category="fallback"
+            )

@@ -4,10 +4,12 @@ Response engine for generating Furby-style therapeutic responses.
 
 import json
 import random
+import logging
 from typing import Dict, List, Optional, Tuple
 from pathlib import Path
 
 from .models import FurbyResponse, ResponseCategory
+from .error_handler import safe_file_operation
 
 
 class ResponseEngine:
@@ -61,44 +63,100 @@ class ResponseEngine:
         }
     
     def get_response(self, category: str, emotion: Optional[str] = None) -> FurbyResponse:
-        """Generate a Furby-style therapeutic response for the given category and emotion."""
-        # Get the appropriate category, fallback if not found
-        response_category = self.categories.get(category, self.categories.get('fallback'))
-        if not response_category:
-            response_category = list(self.categories.values())[0]  # Use first available
+        """Generate a Furby-style therapeutic response with comprehensive error handling."""
+        try:
+            # Validate inputs
+            if not isinstance(category, str):
+                logging.warning(f"Invalid category type: {type(category)}")
+                category = 'fallback'
+            
+            if emotion and not isinstance(emotion, str):
+                logging.warning(f"Invalid emotion type: {type(emotion)}")
+                emotion = None
+            
+            # Get the appropriate category, fallback if not found
+            response_category = self.categories.get(category, self.categories.get('fallback'))
+            if not response_category:
+                if self.categories:
+                    response_category = list(self.categories.values())[0]  # Use first available
+                else:
+                    # Emergency fallback if no categories loaded
+                    return self._create_emergency_response()
+            
+            # Validate category has required data
+            if not response_category.responses:
+                logging.error(f"Category {category} has no responses")
+                return self._create_emergency_response()
+            
+            # Select base response with error handling
+            try:
+                base_message = random.choice(response_category.responses)
+            except (IndexError, TypeError) as e:
+                logging.error(f"Error selecting response from category {category}: {e}")
+                base_message = "Furby is here to listen! *gentle chirp*"
+            
+            # Add Furby flair with error handling
+            try:
+                enhanced_message = self.add_furby_flair(base_message, response_category)
+            except Exception as e:
+                logging.warning(f"Error adding Furby flair: {e}")
+                enhanced_message = base_message
+            
+            # Maybe add Furbish phrase with error handling
+            try:
+                furbish_phrase = self.maybe_add_furbish(response_category)
+            except Exception as e:
+                logging.warning(f"Error adding Furbish phrase: {e}")
+                furbish_phrase = None
+            
+            # Format the final response with error handling
+            try:
+                formatted_output = self.format_therapeutic_response(
+                    enhanced_message, 
+                    furbish_phrase,
+                    response_category.furby_sounds
+                )
+            except Exception as e:
+                logging.warning(f"Error formatting response: {e}")
+                formatted_output = enhanced_message
+            
+            # Create clean version for potential repeats
+            try:
+                clean_version = self._create_clean_version(enhanced_message)
+            except Exception as e:
+                logging.warning(f"Error creating clean version: {e}")
+                clean_version = enhanced_message
+            
+            # Create response object
+            response = FurbyResponse(
+                base_message=base_message,
+                furby_sounds=response_category.furby_sounds or ["*chirp*"],
+                furbish_phrase=furbish_phrase,
+                formatted_output=formatted_output,
+                clean_version=clean_version
+            )
+            
+            # Cache this response for potential repeat requests
+            self._last_response = response
+            
+            logging.debug(f"Generated response for category {category}")
+            return response
+            
+        except Exception as e:
+            logging.error(f"Critical error in get_response: {e}")
+            return self._create_emergency_response()
+    
+    def _create_emergency_response(self) -> FurbyResponse:
+        """Create an emergency fallback response when all else fails."""
+        emergency_message = "*gentle beep* Furby is having a little trouble, but me still here for you! *supportive chirp*"
         
-        # Select base response
-        base_message = random.choice(response_category.responses)
-        
-        # Add Furby flair
-        enhanced_message = self.add_furby_flair(base_message, response_category)
-        
-        # Maybe add Furbish phrase
-        furbish_phrase = self.maybe_add_furbish(response_category)
-        
-        # Format the final response
-        formatted_output = self.format_therapeutic_response(
-            enhanced_message, 
-            furbish_phrase,
-            response_category.furby_sounds
+        return FurbyResponse(
+            base_message=emergency_message,
+            furby_sounds=["*gentle beep*", "*supportive chirp*"],
+            furbish_phrase=("Dah koh-koh", "it's okay"),
+            formatted_output=emergency_message,
+            clean_version="Furby is having a little trouble, but I'm still here for you!"
         )
-        
-        # Create clean version for potential repeats
-        clean_version = self._create_clean_version(enhanced_message)
-        
-        # Create response object
-        response = FurbyResponse(
-            base_message=base_message,
-            furby_sounds=response_category.furby_sounds,
-            furbish_phrase=furbish_phrase,
-            formatted_output=formatted_output,
-            clean_version=clean_version
-        )
-        
-        # Cache this response for potential repeat requests
-        self._last_response = response
-        
-        return response
     
     def add_furby_flair(self, response: str, category: ResponseCategory) -> str:
         """Add Furby-style language elements and sound effects to response."""
