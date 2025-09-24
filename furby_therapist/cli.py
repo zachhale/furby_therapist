@@ -99,11 +99,9 @@ class FurbyTherapistCLI:
         morning_greeting = self.response_engine.get_good_morning_greeting()
         
         welcome_msg = f"""
-🌟✨ *chirp chirp* Furby Therapist is here! *happy beep* ✨🌟
+💜 Furby Therapist
 
 {morning_greeting}
-
-What's on your mind today? *warm chirp*
         """
         print(welcome_msg)
     
@@ -251,35 +249,12 @@ What's on your mind today? *warm chirp*
         try:
             self.display_welcome_message()
             
-            # Track session state
-            session_prompts = [
-                "� Youo: ",
-                "💬 Share with Furby: ",
-                "🗨️  Tell Furby: ",
-                "💝 What's on your mind: "
-            ]
-            prompt_index = 0
             consecutive_errors = 0  # Track consecutive errors for safety
             
             while True:
                 try:
-                    # Check memory usage periodically
-                    if prompt_index % 10 == 0:  # Every 10 interactions
-                        memory_warning = self.error_handler.check_memory_usage()
-                        if memory_warning and "critical" in memory_warning.lower():
-                            print(self.format_response_output(memory_warning))
-                            self.error_handler.cleanup_resources()
-                    
-                    # Rotate prompts for variety, but keep it simple
-                    current_prompt = session_prompts[prompt_index % len(session_prompts)]
-                    
-                    # Get user input with contextual prompts
-                    conversation_length = self.conversation.get_conversation_length()
-                    if conversation_length > 0 and conversation_length % 5 == 0:
-                        # Every 5 turns, show a gentle check-in
-                        print(f"\n*gentle chirp* Furby has been listening for a while! How are you feeling? *caring beep*")
-                    
-                    user_input = input(current_prompt).strip()
+                    # Get user input with simple prompt
+                    user_input = input("> ").strip()
                     
                     # Reset error counter on successful input
                     consecutive_errors = 0
@@ -308,9 +283,6 @@ What's on your mind today? *warm chirp*
                     # Process the query with conversation context
                     response = self.process_single_query(user_input, use_conversation_context=True)
                     print(response)
-                    
-                    # Rotate prompt for next interaction
-                    prompt_index += 1
                     
                 except EOFError:
                     # Handle Ctrl+D gracefully
