@@ -38,14 +38,25 @@ class TestCompleteIntegration(unittest.TestCase):
         self.assertGreater(len(response.strip()), 50)
     
     def test_complete_pipeline_bicycle_easter_egg(self):
-        """Test complete pipeline with bicycle easter egg."""
+        """Test complete pipeline with bicycle easter egg in cycling mode."""
+        # Test that bicycle terms don't trigger special responses in standard mode
         query = "I love riding my bicycle in the morning"
-        response = self.cli.process_single_query(query)
+        standard_response = self.cli.process_single_query(query)
         
-        self.assertIn("💜 Furby says:", response)
-        # Should contain bicycle-themed content
+        self.assertIn("💜 Furby says:", standard_response)
+        # Standard mode should NOT contain bicycle-themed content
+        self.assertFalse(
+            any(word in standard_response.lower() for word in ['spoke', 'chainring', 'derailleur', 'gravel grinding'])
+        )
+        
+        # Test that cycling mode DOES contain bicycle-themed content
+        cycling_cli = FurbyTherapistCLI(cycling_mode=True)
+        cycling_response = cycling_cli.process_single_query(query)
+        
+        self.assertIn("💜 Furby says:", cycling_response)
+        # Cycling mode should contain bicycle-themed content
         self.assertTrue(
-            any(word in response.lower() for word in ['bike', 'cycle', 'pedal', 'wheel', 'chain'])
+            any(word in cycling_response.lower() for word in ['bike', 'cycle', 'pedal', 'wheel', 'chain', 'spoke', 'gear'])
         )
     
     def test_complete_pipeline_cycling_culture_references(self):

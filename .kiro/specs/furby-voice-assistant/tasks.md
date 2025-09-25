@@ -121,13 +121,35 @@
   - Write unit tests for expanded cycling keyword detection and themed responses
   - _Requirements: 2.2, 2.4, 2.5_
 
-- [ ] 12. Create comprehensive test suite
+- [x] 12. Create cycling mode toggle with --bikes flag
+  - Add --bikes command-line flag to enable cycling mode in both interactive and single-query modes
+  - Keep existing therapeutic responses as the default standard mode (no cycling humor)
+  - Remove bicycle category as a special priority case in the matcher to allow emotional categories to take precedence
+  - Remove bicycle keyword priority matching logic that overrides emotional category detection
+  - Create cycling-enhanced versions of all emotional response categories that activate only with --bikes flag, following existing sophisticated cycling themes:
+    - Cycling sadness responses with alt cycling culture (e.g., "sadness is like a broken spoke - fixable but needs patience, just like r/xbiking teaches us")
+    - Cycling anxiety responses with bike geometry wisdom (e.g., "anxiety affects your emotional reach-to-stack ratio - find your comfort zone")
+    - Cycling anger responses with gravel grinding metaphors (e.g., "anger is like rough gravel - builds character if you lean into it")
+    - Cycling happiness responses with randonneuring joy (e.g., "happiness is like a perfect brevet - long, challenging, but deeply satisfying")
+    - Cycling confusion responses with bike fit analogies (e.g., "confusion is like poor bike fit - small adjustments make huge differences")
+    - Cycling loneliness responses with bikepacking wisdom (e.g., "loneliness teaches self-reliance like solo bikepacking adventures")
+    - Cycling gratitude responses with constructeur appreciation (e.g., "gratitude is like hand-built frames - crafted with care and built to last")
+    - Cycling general and fallback responses featuring The Radavist, Path Less Pedaled, Bicycle Quarterly references, N+1 rule jokes, bike geometry humor (wheelbase, BB drop, trail, slack vs steep angles), and retrogrouch wisdom
+  - Integrate existing bicycle category responses into the cycling-enhanced emotional categories
+  - Add N+1 rule jokes throughout different emotional contexts when in cycling mode (e.g., "you need N+1 coping strategies")
+  - Update CLI help text to explain both standard and cycling modes
+  - Ensure all cycling metaphors maintain therapeutic value and emotional appropriateness
+  - Update tests to verify both standard mode (no cycling) and cycling mode (--bikes flag) work correctly
+  - Write unit tests to verify cycling humor only appears when --bikes flag is used
+  - _Requirements: 2.2, 2.4, 2.5, 2.7, 3.1, 3.3_
+
+- [ ] 13. Create comprehensive test suite
   - Write unit tests for all core components (processor, matcher, engine)
   - Add integration tests for end-to-end query processing
   - Add manual test scenarios for therapeutic quality and Furby authenticity
   - _Requirements: 5.4, 5.6_
 
-- [ ] 13. Add packaging and deployment setup
+- [ ] 14. Add packaging and deployment setup
   - Create setup script for easy installation
   - Add executable script for convenient CLI access
   - Create documentation for installation and usage

@@ -15,11 +15,12 @@ from .error_handler import safe_file_operation
 class ResponseEngine:
     """Generates Furby-style therapeutic responses based on categorized input."""
     
-    def __init__(self, responses_file: Optional[str] = None):
+    def __init__(self, responses_file: Optional[str] = None, cycling_mode: bool = False):
         """Initialize the response engine with response database."""
         if responses_file is None:
             responses_file = Path(__file__).parent / "responses.json"
         
+        self.cycling_mode = cycling_mode
         self.categories = self._load_responses(responses_file)
         self._last_response: Optional[FurbyResponse] = None  # Cache for repeat functionality
         
@@ -30,6 +31,8 @@ class ResponseEngine:
                 data = json.load(f)
             
             categories = {}
+            
+            # Load standard categories
             for name, category_data in data['categories'].items():
                 categories[name] = ResponseCategory(
                     name=name,
@@ -39,6 +42,29 @@ class ResponseEngine:
                     furbish_phrases=[(phrase[0], phrase[1]) for phrase in category_data['furbish_phrases']],
                     weight=1.0  # Default weight
                 )
+            
+            # If cycling mode is enabled, load cycling responses and override emotional categories
+            if self.cycling_mode:
+                cycling_file = Path(__file__).parent / "cycling_responses.json"
+                try:
+                    with open(cycling_file, 'r', encoding='utf-8') as f:
+                        cycling_data = json.load(f)
+                    
+                    # Override emotional categories with cycling versions
+                    for name, category_data in cycling_data['cycling_categories'].items():
+                        categories[name] = ResponseCategory(
+                            name=name,
+                            keywords=category_data['keywords'],
+                            responses=category_data['responses'],
+                            furby_sounds=category_data['furby_sounds'],
+                            furbish_phrases=[(phrase[0], phrase[1]) for phrase in category_data['furbish_phrases']],
+                            weight=1.0  # Default weight
+                        )
+                    
+                    logging.info("Cycling mode responses loaded successfully")
+                    
+                except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
+                    logging.warning(f"Could not load cycling responses: {e}, using standard responses")
             
             return categories
             

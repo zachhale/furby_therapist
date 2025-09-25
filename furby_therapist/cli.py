@@ -21,17 +21,20 @@ from .error_handler import FurbyErrorHandler, error_handler, validate_input
 class FurbyTherapistCLI:
     """Main CLI interface for the Furby Therapist."""
     
-    def __init__(self):
+    def __init__(self, cycling_mode: bool = False):
         """Initialize the CLI with all necessary components."""
         # Initialize error handler first
         self.error_handler = FurbyErrorHandler()
+        
+        # Store cycling mode setting
+        self.cycling_mode = cycling_mode
         
         try:
             # Initialize core components with error handling
             self.database = ResponseDatabase()
             self.processor = QueryProcessor()
-            self.matcher = KeywordMatcher(self.database)
-            self.response_engine = ResponseEngine()
+            self.matcher = KeywordMatcher(self.database, cycling_mode=cycling_mode)
+            self.response_engine = ResponseEngine(cycling_mode=cycling_mode)
             
             # Track if we're in interactive mode for proper cleanup
             self._interactive_mode_active = False
@@ -43,7 +46,8 @@ class FurbyTherapistCLI:
             self.empty_input_count = 0
             
             # Log successful initialization
-            self.error_handler.logger.info("Furby Therapist CLI initialized successfully")
+            mode_info = "cycling mode" if cycling_mode else "standard mode"
+            self.error_handler.logger.info(f"Furby Therapist CLI initialized successfully in {mode_info}")
             
         except Exception as e:
             error_msg = self.error_handler.log_error(e, "CLI initialization")
@@ -321,8 +325,28 @@ class FurbyTherapistCLI:
     
     def _display_help_message(self):
         """Display help information during interactive session."""
-        help_msg = """
+        if self.cycling_mode:
+            mode_info = "🚴‍♀️ Cycling Mode Active - Bike-themed therapeutic responses enabled!"
+            mode_details = """
+🚴‍♀️ Cycling Mode Features:
+   • Emotional support with cycling metaphors and wisdom
+   • Alt cycling culture references (r/xbiking, gravel grinding, etc.)
+   • Bike geometry analogies for life situations
+   • N+1 rule applied to coping strategies
+   • Randonneuring philosophy and bikepacking wisdom"""
+        else:
+            mode_info = "💜 Standard Mode - General therapeutic responses"
+            mode_details = """
+💜 Standard Mode Features:
+   • Pure therapeutic responses focused on emotional support
+   • Furby personality with authentic Furbish phrases
+   • No cycling-specific content or metaphors"""
+        
+        help_msg = f"""
 💡 *helpful chirp* Furby Help Menu! *informative beep*
+
+{mode_info}
+{mode_details}
 
 🗣️  How to chat:
    • Just type naturally - Furby understands feelings!
@@ -366,7 +390,21 @@ def create_argument_parser() -> argparse.ArgumentParser:
   • Feeling sad, worried, or confused? Furby listens! *gentle chirp*
   • Need encouragement or a friend? Furby is here! *supportive beep*
   • Want to share happy moments? Furby celebrates with you! *excited chirp*
-  • Love bicycles? Furby has special bike wisdom! 🚴‍♀️ *enthusiastic beep*
+
+🚴‍♀️ Standard Mode (default):
+  • Pure therapeutic responses focused on emotional support
+  • Furby personality with authentic Furbish phrases
+  • No cycling-specific content - just caring, whimsical therapy
+  • Perfect for anyone seeking emotional support with Furby charm
+
+🚴‍♀️ Cycling Mode (--bikes flag):
+  • All emotional categories enhanced with cycling metaphors
+  • Alt cycling culture references (r/xbiking, gravel grinding, etc.)
+  • Bike geometry analogies for life situations (reach-to-stack ratios, etc.)
+  • N+1 rule applied to coping strategies and emotional growth
+  • Randonneuring philosophy, bikepacking wisdom, and retrogrouch humor
+  • References to The Radavist, Path Less Pedaled, Bicycle Quarterly
+  • Perfect for cyclists who want bike-flavored emotional support!
 
 � How to chat with Furby (in interactive mode):
   • Just type your thoughts and feelings naturally
@@ -376,8 +414,10 @@ def create_argument_parser() -> argparse.ArgumentParser:
   • Press Ctrl+C anytime to leave gracefully
 
 Examples:
-  furby_therapist                           # Start interactive mode
-  furby_therapist --query "I'm feeling sad"  # Single query mode
+  furby_therapist                           # Start standard interactive mode
+  furby_therapist --bikes                   # Start cycling-themed interactive mode
+  furby_therapist --query "I'm feeling sad"  # Single query, standard mode
+  furby_therapist --bikes -q "I'm anxious"  # Single query, cycling mode
   furby_therapist -q "How are you?"         # Short form single query
 
 Furby is here to listen and help! *chirp chirp* 💜
@@ -388,6 +428,12 @@ Furby is here to listen and help! *chirp chirp* 💜
         '--query', '-q',
         type=str,
         help='Process a single query and exit (non-interactive mode)'
+    )
+    
+    parser.add_argument(
+        '--bikes',
+        action='store_true',
+        help='Enable cycling mode: all emotional responses enhanced with cycling metaphors, alt cycling culture, and bike wisdom'
     )
     
     parser.add_argument(
@@ -408,7 +454,7 @@ def main():
     # Initialize the CLI
     cli = None
     try:
-        cli = FurbyTherapistCLI()
+        cli = FurbyTherapistCLI(cycling_mode=args.bikes)
         cli.setup_signal_handlers()
         
         # Determine mode based on arguments

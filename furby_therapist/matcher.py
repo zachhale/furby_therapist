@@ -14,11 +14,13 @@ class KeywordMatcher:
     and weighted scoring for confidence assessment.
     """
     
-    def __init__(self, response_database: ResponseDatabase):
+    def __init__(self, response_database: ResponseDatabase, cycling_mode: bool = False):
         self.database = response_database
         self.categories = response_database.get_all_categories()
-        # Remove fallback from matching categories since it's used as default
-        self.matching_categories = {k: v for k, v in self.categories.items() if k != 'fallback'}
+        self.cycling_mode = cycling_mode
+        # Remove fallback and bicycle from matching categories since fallback is used as default
+        # and bicycle category is no longer a special priority case
+        self.matching_categories = {k: v for k, v in self.categories.items() if k not in ['fallback', 'bicycle']}
     
     def match_category(self, keywords: List[str]) -> Tuple[str, float]:
         """
@@ -51,12 +53,7 @@ class KeywordMatcher:
                 logging.warning(f"Too many keywords ({len(valid_keywords)}), truncating to 20")
                 valid_keywords = valid_keywords[:20]
             
-            # Check for bicycle easter eggs first (higher priority)
-            bicycle_score = self._check_bicycle_keywords(valid_keywords)
-            if bicycle_score > 0:
-                normalized_confidence = min(bicycle_score / len(valid_keywords), 1.0)
-                logging.debug(f"Bicycle category matched with confidence {normalized_confidence:.2f}")
-                return 'bicycle', normalized_confidence
+            # Bicycle keywords are no longer prioritized - they're handled in cycling mode
             
             category_scores = {}
             
