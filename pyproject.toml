@@ -10,11 +10,16 @@ readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
 authors = [
-    {name = "Furby Therapist Team"},
+    {name = "Furby Therapist Team", email = "furby@example.com"},
 ]
+maintainers = [
+    {name = "Furby Therapist Team", email = "furby@example.com"},
+]
+keywords = ["furby", "therapy", "cli", "chatbot", "therapeutic", "assistant", "mental-health", "cycling"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Healthcare Industry",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
@@ -22,28 +27,67 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Games/Entertainment",
     "Topic :: Scientific/Engineering :: Human Machine Interfaces",
+    "Topic :: Communications :: Chat",
+    "Environment :: Console",
+    "Natural Language :: English",
 ]
+
+[project.urls]
+Homepage = "https://github.com/furby-therapist/furby-therapist"
+Documentation = "https://github.com/furby-therapist/furby-therapist/tree/main/docs"
+Repository = "https://github.com/furby-therapist/furby-therapist"
+"Bug Reports" = "https://github.com/furby-therapist/furby-therapist/issues"
+Changelog = "https://github.com/furby-therapist/furby-therapist/blob/main/CHANGELOG.md"
 
 [project.scripts]
 furby_therapist = "furby_therapist.cli.main:main"
+furby-therapist = "furby_therapist.cli.main:main"
 
 [project.optional-dependencies]
 dev = [
-    "pytest",
-    "pytest-cov",
-    "coverage",
-    "tox",
+    "pytest>=6.0",
+    "pytest-cov>=2.0",
+    "coverage>=5.0",
+    "tox>=3.0",
+    "build>=0.7.0",
+    "twine>=3.0.0",
 ]
 test = [
-    "pytest",
-    "pytest-cov",
-    "coverage",
+    "pytest>=6.0",
+    "pytest-cov>=2.0",
+    "coverage>=5.0",
 ]
 
 [tool.setuptools]
 packages = ["furby_therapist"]
+include-package-data = true
 
 [tool.setuptools.package-data]
-"furby_therapist.data" = ["*.json", "*.md"]
+"furby_therapist" = ["data/*.json", "data/*.md"]
+
+[tool.setuptools.exclude-package-data]
+"*" = ["tests", "tests.*", "*.pyc", "__pycache__"]
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["furby_therapist"]
+omit = ["tests/*", "setup.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+]
+
+# Pytest configuration
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"

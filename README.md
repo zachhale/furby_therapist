@@ -22,9 +22,43 @@ This project follows a three-function architecture:
 
 ## Installation
 
+### Quick Install
+
 ```bash
-pip install -e .
+# Install from PyPI (when available)
+pip install furby-therapist
+
+# Or install from source
+git clone <repository-url>
+cd furby-therapist
+pip install .
 ```
+
+### Development Install
+
+```bash
+# Clone and install in development mode
+git clone <repository-url>
+cd furby-therapist
+pip install -e .
+
+# Or use the Makefile
+make dev-install
+```
+
+### Alternative Methods
+
+```bash
+# Run without installation (development)
+git clone <repository-url>
+cd furby-therapist
+./furby_therapist_cli --query "Hello Furby"
+
+# Or as Python module
+python3 -m furby_therapist --query "Hello Furby"
+```
+
+> **Complete Installation Guide**: See [Installation Documentation](docs/installation.md) for detailed instructions, troubleshooting, and platform-specific setup.
 
 ## CLI Usage
 
@@ -223,8 +257,10 @@ See [Testing Guide](docs/testing.md) for comprehensive testing documentation.
 
 ## Documentation
 
+- **[Installation Guide](docs/installation.md)**: Complete installation instructions for all platforms and use cases
 - **[CLI Usage Guide](docs/cli_usage.md)**: Complete guide to running the CLI with all methods, troubleshooting, and best practices
 - **[Library Usage Examples](docs/library_usage_examples.md)**: Detailed examples for integrating the library into web apps, Discord bots, and other projects
-- **[Testing Guide](docs/testing.md)**: Comprehensive testing documentation with multiple testing methods
-- **[Troubleshooting](docs/troubleshooting.md)**: Common issues and solutions
 - **[Library API Documentation](docs/library_usage.md)**: Core library API reference
+- **[Testing Guide](docs/testing.md)**: Comprehensive testing documentation with multiple testing methods
+- **[Deployment Guide](docs/deployment.md)**: Building, packaging, and deploying the project
+- **[Troubleshooting](docs/troubleshooting.md)**: Common issues and solutions

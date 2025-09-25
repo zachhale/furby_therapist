@@ -1,8 +1,39 @@
-#!/usr/bin/env bash
-# Furby Therapist CLI launcher script
+#!/usr/bin/env python3
+"""
+Furby Therapist CLI - Executable launcher script.
 
-# Get the directory where this script is located
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+This script provides a convenient way to run the Furby Therapist CLI
+when the package is not installed via pip.
 
-# Run the Python CLI with all passed arguments
-python3 "$SCRIPT_DIR/main.py" "$@"
+Usage:
+    ./furby_therapist_cli                    # Interactive mode
+    ./furby_therapist_cli --query "hello"    # Single query mode
+    ./furby_therapist_cli --bikes            # Cycling mode
+    ./furby_therapist_cli --help             # Show help
+"""
+
+import sys
+import os
+from pathlib import Path
+
+# Add the project root to Python path for imports
+project_root = Path(__file__).parent
+sys.path.insert(0, str(project_root))
+
+try:
+    # Import and run the CLI main function
+    from furby_therapist.cli.main import main
+    
+    if __name__ == "__main__":
+        main()
+        
+except ImportError as e:
+    print(f"Error: Could not import Furby Therapist CLI: {e}")
+    print("\nTroubleshooting:")
+    print("1. Make sure you're in the project root directory")
+    print("2. Install the package: pip install -e .")
+    print("3. Or use: python3 -m furby_therapist")
+    sys.exit(1)
+except Exception as e:
+    print(f"Error running Furby Therapist CLI: {e}")
+    sys.exit(1)

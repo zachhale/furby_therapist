@@ -1,0 +1,27 @@
+# MANIFEST.in - Package data inclusion for Furby Therapist
+
+# Include documentation files
+include README.md
+include LICENSE
+recursive-include docs *.md
+
+# Include data files
+recursive-include furby_therapist/data *.json *.md
+
+# Include configuration files
+include pyproject.toml
+include requirements.txt
+include Makefile
+
+# Include test files for development installations
+recursive-include tests *.py
+
+# Exclude development and build artifacts
+global-exclude __pycache__
+global-exclude *.py[co]
+global-exclude .DS_Store
+global-exclude *.so
+global-exclude .git*
+exclude .gitignore
+exclude tox.ini
+exclude pytest.ini
