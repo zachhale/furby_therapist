@@ -19,7 +19,7 @@ try:
 except ImportError:
     PSUTIL_AVAILABLE = False
 
-from .models import FurbyResponse
+from ..models import FurbyResponse
 
 
 class FurbyErrorHandler:

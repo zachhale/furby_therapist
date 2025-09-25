@@ -8,7 +8,7 @@ import logging
 from typing import Dict, List, Optional, Tuple
 from pathlib import Path
 
-from .models import FurbyResponse, ResponseCategory
+from ..models import FurbyResponse, ResponseCategory
 from .error_handler import safe_file_operation
 
 
@@ -18,7 +18,10 @@ class ResponseEngine:
     def __init__(self, responses_file: Optional[str] = None, cycling_mode: bool = False):
         """Initialize the response engine with response database."""
         if responses_file is None:
-            responses_file = Path(__file__).parent / "responses.json"
+            # Look for data files in the data directory
+            current_dir = Path(__file__).parent
+            parent_dir = current_dir.parent
+            responses_file = parent_dir / "data" / "responses.json"
         
         self.cycling_mode = cycling_mode
         self.categories = self._load_responses(responses_file)
@@ -45,7 +48,7 @@ class ResponseEngine:
             
             # If cycling mode is enabled, load cycling responses and override emotional categories
             if self.cycling_mode:
-                cycling_file = Path(__file__).parent / "cycling_responses.json"
+                cycling_file = Path(responses_file).parent / "cycling_responses.json"
                 try:
                     with open(cycling_file, 'r', encoding='utf-8') as f:
                         cycling_data = json.load(f)

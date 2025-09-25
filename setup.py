@@ -32,12 +32,12 @@ setup(
     python_requires=">=3.8",
     entry_points={
         "console_scripts": [
-            "furby_therapist=furby_therapist.cli:main",
+            "furby_therapist=furby_therapist.cli.main:main",
         ],
     },
     include_package_data=True,
     package_data={
-        "furby_therapist": ["*.json", "*.md"],
+        "furby_therapist.data": ["*.json", "*.md"],
     },
     install_requires=[
         # No external dependencies - uses only Python standard library

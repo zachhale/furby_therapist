@@ -1,17 +1,24 @@
-# Furby Therapist CLI
+# Furby Therapist
 
-A therapeutic assistant that combines the whimsical personality of a Furby toy with simple therapeutic responses. Features a unique cycling culture twist with deep knowledge of bike geometry, alt cycling communities, and cycling-themed therapeutic metaphors. Designed to run efficiently with minimal resource usage.
+A therapeutic assistant that combines the whimsical personality of a Furby toy with simple therapeutic responses. Available as both a **reusable library** for integration into other projects and a **CLI interface** for direct command-line usage. Features an optional cycling culture mode with deep knowledge of bike geometry, alt cycling communities, and cycling-themed therapeutic metaphors.
+
+## Architecture
+
+This project follows a three-function architecture:
+
+1. **Core Library** (`furby_therapist.core`): Importable library for external projects
+2. **CLI Interface** (`furby_therapist.cli`): Command-line tool that uses the library  
+3. **Future Voice Interface**: Prepared structure for upcoming voice-enabled chatbot project
 
 ## Features
 
-- Offline therapeutic responses in Furby-style language
-- Interactive CLI interface with continuous conversation mode
-- Authentic Furbish phrases with English translations
-- **Cycling Culture Integration**: Deep knowledge of bike geometry, alt cycling communities, and cycling magazines
-- **Therapeutic Cycling Metaphors**: Uses bike mechanics and cycling experiences as therapeutic analogies
-- **Bike Geometry Expertise**: Understands reach/stack ratios, chainstay length, head angles, and wheelbase effects
-- Lightweight design with minimal resource usage
-- Simple keyword-based response matching
+- **Dual Usage**: Both library and CLI interface
+- **Clean API**: Easy integration into external projects
+- **Offline Operation**: No network connectivity required
+- **Authentic Furbish**: Real Furby language with translations
+- **Cycling Mode**: Optional bike culture integration with therapeutic metaphors
+- **Stateful/Stateless**: Configurable conversation memory
+- **Lightweight**: Minimal resource usage and dependencies
 
 ## Installation
 
@@ -19,17 +26,81 @@ A therapeutic assistant that combines the whimsical personality of a Furby toy w
 pip install -e .
 ```
 
-## Usage
+## CLI Usage
 
-### Interactive Mode (default)
+### Recommended Methods
+
+**Method 1: Installed Entry Point (Recommended)**
 ```bash
-furby-therapist
+# Interactive mode
+furby_therapist
+
+# Single query mode
+furby_therapist --query "I'm feeling sad"
+
+# Cycling mode
+furby_therapist --bikes --query "I'm stressed about performance"
 ```
 
-### Single Query Mode
+**Method 2: Python Module Execution**
 ```bash
-furby-therapist --query "how are you feeling?"
+# Interactive mode
+python3 -m furby_therapist
+
+# Single query mode  
+python3 -m furby_therapist --query "I'm feeling anxious"
+
+# Cycling mode
+python3 -m furby_therapist --bikes
 ```
+
+**Method 3: Direct Script Execution (Development)**
+```bash
+# For development when package isn't installed
+python3 furby_therapist/cli/main.py --query "Hello Furby"
+```
+
+> **Note**: See [CLI Usage Guide](docs/cli_usage.md) for complete documentation, troubleshooting, and advanced usage patterns.
+
+## Library Usage
+
+### Basic Usage
+
+```python
+from furby_therapist import process_single_query, create_furby_therapist
+
+# Simple single query
+response = process_single_query("I'm feeling anxious")
+print(response.formatted_output)
+
+# Stateful conversation
+therapist = create_furby_therapist(cycling_mode=False, stateful=True)
+response = therapist.process_query("I'm worried about work")
+print(response.formatted_output)
+```
+
+### Advanced Usage
+
+```python
+from furby_therapist import FurbyTherapist
+
+# Create therapist with cycling mode
+therapist = FurbyTherapist(cycling_mode=True, maintain_session=True)
+
+# Process queries
+response = therapist.process_query("I'm feeling overwhelmed")
+print("Response:", response.formatted_output)
+print("Clean version:", response.clean_version)
+
+# Get session statistics
+stats = therapist.get_session_stats()
+print("Conversation length:", stats['conversation_length'])
+
+# Cleanup when done
+therapist.cleanup()
+```
+
+See [Library Usage Examples](docs/library_usage_examples.md) for more detailed examples including web app integration, Discord bots, and session management.
 
 ## Cycling Culture Features
 
@@ -86,11 +157,74 @@ The therapeutic responses include realistic cycling sounds mixed with Furby pers
 
 ```
 furby_therapist/
-├── __init__.py          # Package initialization
-├── models.py            # Data models and structures
-├── cli.py              # Command-line interface
-├── processor.py        # Query text processing
-├── matcher.py          # Keyword matching logic
-├── responses.py        # Response generation engine
-└── database.py         # Response database
+├── __init__.py              # Clean public API for library usage
+├── __main__.py              # Entry point for python -m furby_therapist
+├── core/                    # Core library components
+│   ├── library.py           # Main FurbyTherapist class
+│   ├── processor.py         # Query text processing
+│   ├── matcher.py           # Keyword matching logic
+│   ├── responses.py         # Response generation engine
+│   ├── database.py          # Response database management
+│   └── error_handler.py     # Error handling utilities
+├── cli/                     # Command-line interface
+│   ├── main.py              # CLI implementation
+│   └── __init__.py          # CLI module exports
+├── models/                  # Shared data models
+│   ├── models.py            # Data structures and types
+│   └── __init__.py          # Model exports
+├── data/                    # JSON response files and resources
+│   ├── responses.json       # Standard therapeutic responses
+│   ├── cycling_responses.json # Cycling-themed responses
+│   └── furbish_documentation.md # Furbish language reference
+docs/                        # Documentation
+├── cli_usage.md             # Complete CLI usage guide
+└── library_usage_examples.md # Library integration examples
 ```
+
+## Testing
+
+### Quick Test Commands (Using Makefile)
+```bash
+# Run all tests (recommended)
+make test
+
+# Run all tests with verbose output
+make test-verbose
+
+# Test by category
+make test-core          # Core library tests
+make test-cli           # CLI tests  
+make test-models        # Data model tests
+make test-features      # Feature tests
+make test-unit          # All unit tests
+make test-integration   # Integration tests
+
+# Run specific test module
+make test-module MODULE=test_library
+
+# Test basic functionality
+make test-functionality
+
+# Get help with all available commands
+make help
+```
+
+### Alternative Test Methods
+```bash
+# Direct unittest execution
+python3 -m unittest discover tests -v
+
+# Using test runner script
+python3 tests/test_runner.py --unit
+python3 tests/test_runner.py --integration
+```
+
+See [Testing Guide](docs/testing.md) for comprehensive testing documentation.
+
+## Documentation
+
+- **[CLI Usage Guide](docs/cli_usage.md)**: Complete guide to running the CLI with all methods, troubleshooting, and best practices
+- **[Library Usage Examples](docs/library_usage_examples.md)**: Detailed examples for integrating the library into web apps, Discord bots, and other projects
+- **[Testing Guide](docs/testing.md)**: Comprehensive testing documentation with multiple testing methods
+- **[Troubleshooting](docs/troubleshooting.md)**: Common issues and solutions
+- **[Library API Documentation](docs/library_usage.md)**: Core library API reference

@@ -27,16 +27,23 @@ classifiers = [
 ]
 
 [project.scripts]
-furby_therapist = "furby_therapist.cli:main"
+furby_therapist = "furby_therapist.cli.main:main"
 
 [project.optional-dependencies]
 dev = [
     "pytest",
     "pytest-cov",
+    "coverage",
+    "tox",
+]
+test = [
+    "pytest",
+    "pytest-cov",
+    "coverage",
 ]
 
 [tool.setuptools]
 packages = ["furby_therapist"]
 
 [tool.setuptools.package-data]
-furby_therapist = ["*.json", "*.md"]
+"furby_therapist.data" = ["*.json", "*.md"]

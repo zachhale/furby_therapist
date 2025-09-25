@@ -20,8 +20,10 @@ class ResponseCategory:
 class ResponseDatabase:
     def __init__(self, json_file_path: str = None):
         if json_file_path is None:
+            # Look for data files in the data directory
             current_dir = os.path.dirname(os.path.abspath(__file__))
-            json_file_path = os.path.join(current_dir, 'responses.json')
+            parent_dir = os.path.dirname(current_dir)
+            json_file_path = os.path.join(parent_dir, 'data', 'responses.json')
         
         self.json_file_path = json_file_path
         self.categories: Dict[str, ResponseCategory] = {}

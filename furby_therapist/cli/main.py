@@ -4,46 +4,45 @@ Provides both interactive and single-query modes for therapeutic conversations.
 """
 
 import argparse
-import json
 import sys
 import signal
 import os
 from typing import Optional
 
-from .database import ResponseDatabase
-from .processor import QueryProcessor
-from .matcher import KeywordMatcher
-from .responses import ResponseEngine
-from .models import QueryAnalysis, FurbyResponse, ConversationSession
-from .error_handler import FurbyErrorHandler, error_handler, validate_input
+# Handle both package import and direct execution
+try:
+    from ..core import FurbyTherapist
+    from ..models import FurbyResponse
+    from ..core.error_handler import FurbyErrorHandler
+except ImportError:
+    # Direct execution - add parent directory to path
+    import pathlib
+    sys.path.insert(0, str(pathlib.Path(__file__).parent.parent.parent))
+    from furby_therapist.core import FurbyTherapist
+    from furby_therapist.models import FurbyResponse
+    from furby_therapist.core.error_handler import FurbyErrorHandler
 
 
 class FurbyTherapistCLI:
     """Main CLI interface for the Furby Therapist."""
     
     def __init__(self, cycling_mode: bool = False):
-        """Initialize the CLI with all necessary components."""
-        # Initialize error handler first
+        """Initialize the CLI with the FurbyTherapist library."""
+        # Initialize error handler for CLI-specific logging
         self.error_handler = FurbyErrorHandler()
         
         # Store cycling mode setting
         self.cycling_mode = cycling_mode
         
         try:
-            # Initialize core components with error handling
-            self.database = ResponseDatabase()
-            self.processor = QueryProcessor()
-            self.matcher = KeywordMatcher(self.database, cycling_mode=cycling_mode)
-            self.response_engine = ResponseEngine(cycling_mode=cycling_mode)
+            # Initialize the FurbyTherapist library in stateful mode for interactive sessions
+            self.furby_therapist = FurbyTherapist(
+                cycling_mode=cycling_mode, 
+                maintain_session=True
+            )
             
             # Track if we're in interactive mode for proper cleanup
             self._interactive_mode_active = False
-            
-            # Initialize conversation session for history tracking
-            self.conversation = ConversationSession()
-            
-            # Track consecutive empty inputs for better UX
-            self.empty_input_count = 0
             
             # Log successful initialization
             mode_info = "cycling mode" if cycling_mode else "standard mode"
@@ -67,11 +66,12 @@ class FurbyTherapistCLI:
     
     def _display_goodbye_message(self):
         """Display a personalized goodbye message with good night greeting."""
-        conversation_length = self.conversation.get_conversation_length()
-        recent_emotions = self.conversation.get_recent_emotions()
+        session_stats = self.furby_therapist.get_session_stats()
+        conversation_length = session_stats.get("conversation_length", 0)
+        recent_emotions = session_stats.get("recent_emotions", [])
         
-        # Get good night greeting from response engine
-        night_greeting = self.response_engine.get_good_night_greeting()
+        # Get good night greeting from library
+        night_greeting = self.furby_therapist.get_good_night_greeting()
         
         # Add personalized context based on conversation
         if conversation_length == 0:
@@ -99,8 +99,8 @@ class FurbyTherapistCLI:
         # Clear screen for better presentation (works on most terminals)
         os.system('clear' if os.name == 'posix' else 'cls')
         
-        # Get good morning greeting from response engine
-        morning_greeting = self.response_engine.get_good_morning_greeting()
+        # Get good morning greeting from library
+        morning_greeting = self.furby_therapist.get_good_morning_greeting()
         
         welcome_msg = f"""
 💜 Furby Therapist
@@ -117,133 +117,38 @@ class FurbyTherapistCLI:
     
     def process_single_query(self, query: str, use_conversation_context: bool = False) -> str:
         """
-        Process a single query through the complete pipeline and return the formatted response.
+        Process a single query through the library and return the formatted response.
         
         Args:
             query: User's input text
-            use_conversation_context: Whether to use conversation history for context
+            use_conversation_context: Whether to use conversation history for context (ignored in library mode)
             
         Returns:
             Formatted Furby response
         """
         try:
-            # Check memory usage before processing
-            memory_warning = self.error_handler.check_memory_usage()
-            if memory_warning and "critical" in memory_warning.lower():
-                self.error_handler.cleanup_resources()
-                return self.format_response_output(memory_warning)
+            # Use the library to process the query
+            # The library handles all the processing logic internally
+            furby_response = self.furby_therapist.process_query(query)
             
-            # Validate input with comprehensive validation
-            is_valid, validation_error = validate_input(query, max_length=1000)
-            if not is_valid:
-                self.error_handler.logger.warning(f"Input validation failed: {validation_error}")
-                return self.format_response_output(validation_error)
-            
-            # Handle empty input
-            if not query or not query.strip():
-                # Provide contextual empty input responses
-                if self.empty_input_count == 0:
-                    fallback_msg = "*gentle chirp* Furby is listening! Tell me what's on your mind! *encouraging beep*"
-                elif self.empty_input_count == 1:
-                    fallback_msg = "*patient purr* Take your time! Furby is here when you're ready to share! *supportive chirp*"
-                else:
-                    fallback_msg = "*understanding beep* Sometimes it's hard to find words. That's okay! Furby understands! *gentle purr*"
-                
-                self.empty_input_count += 1
-                self.error_handler.logger.debug(f"Empty input handled, count: {self.empty_input_count}")
-                return self.format_response_output(fallback_msg)
-            
-            # Reset empty input counter on valid input
-            self.empty_input_count = 0
-            
-            # Log query processing start
-            self.error_handler.logger.debug(f"Processing query: {query[:50]}...")
-            
-            # Check if this is a repeat request
-            if self.processor.is_repeat_request(query):
-                self.error_handler.logger.debug("Repeat request detected")
-                if self.response_engine.has_cached_response():
-                    repeat_response = self.response_engine.get_repeat_response()
-                    if repeat_response:
-                        return self.format_response_output(repeat_response.formatted_output)
-                
-                # No cached response available
-                fallback_msg = "*confused chirp* Ooh! Furby doesn't remember what to repeat! Ask me something new! *gentle beep*"
-                self.error_handler.logger.debug("No cached response for repeat request")
-                return self.format_response_output(fallback_msg)
-            
-            # Step 1: Process the query (normalize text, extract keywords, detect emotion)
-            analysis = self.processor.process_query(query)
-            self.error_handler.logger.debug(f"Query analysis: emotion={analysis.detected_emotion}, keywords={analysis.keywords[:3]}")
-            
-            # Step 2: Use conversation context to enhance matching if enabled
-            if use_conversation_context:
-                analysis = self._enhance_with_conversation_context(analysis)
-            
-            # Step 3: Match keywords to determine response category
-            category, confidence = self.matcher.match_category(analysis.keywords)
-            self.error_handler.logger.debug(f"Matched category: {category} (confidence: {confidence:.2f})")
-            
-            # Update analysis with matched category
-            analysis.category = category
-            analysis.confidence = confidence
-            
-            # Step 4: Generate Furby-style therapeutic response
-            furby_response = self.response_engine.get_response(category, analysis.detected_emotion)
-            
-            # Step 5: Add conversation turn to history if in interactive mode
-            if use_conversation_context:
-                self.conversation.add_turn(
-                    user_input=query,
-                    user_emotion=analysis.detected_emotion,
-                    furby_response=furby_response.formatted_output,
-                    response_category=category
-                )
-            
-            # Step 6: Check memory usage after processing
-            memory_warning = self.error_handler.check_memory_usage()
-            if memory_warning:
-                self.error_handler.logger.warning("Memory usage high after query processing")
-            
-            # Step 7: Format and return the response
-            self.error_handler.logger.debug("Query processed successfully")
+            # Format and return the response
+            self.error_handler.logger.debug("Query processed successfully via library")
             return self.format_response_output(furby_response.formatted_output)
             
+        except ValueError as e:
+            # Handle validation errors from the library
+            self.error_handler.logger.warning(f"Input validation failed: {e}")
+            return self.format_response_output(str(e))
+        except RuntimeError as e:
+            # Handle processing errors from the library
+            self.error_handler.logger.error(f"Library processing error: {e}")
+            return self.format_response_output(str(e))
         except Exception as e:
-            # Comprehensive error handling with logging and Furby personality
-            error_msg = self.error_handler.log_error(e, "query processing", query)
-            
-            # Check if we need to clean up resources
-            memory_warning = self.error_handler.check_memory_usage()
-            if memory_warning and "critical" in memory_warning.lower():
-                self.error_handler.cleanup_resources()
-                error_msg += f"\n\n{memory_warning}"
-            
+            # Handle any other unexpected errors
+            error_msg = self.error_handler.log_error(e, "CLI query processing", query)
             return self.format_response_output(error_msg)
     
-    def _enhance_with_conversation_context(self, analysis: QueryAnalysis) -> QueryAnalysis:
-        """
-        Enhance query analysis with conversation history context.
-        
-        Args:
-            analysis: Initial query analysis
-            
-        Returns:
-            Enhanced analysis with conversation context
-        """
-        # Check if we've been discussing similar topics
-        if self.conversation.has_discussed_topic(analysis.keywords):
-            # Boost confidence for continuing conversations
-            analysis.confidence = min(1.0, analysis.confidence + 0.2)
-        
-        # Consider recent emotional context
-        recent_emotions = self.conversation.get_recent_emotions()
-        if recent_emotions and analysis.detected_emotion == "neutral":
-            # If current query is neutral but recent emotions exist, use most recent
-            analysis.detected_emotion = recent_emotions[-1]
-            analysis.confidence = max(0.3, analysis.confidence)
-        
-        return analysis
+
     
     def interactive_mode(self):
         """Run the CLI in continuous interactive mode with enhanced session management."""
@@ -320,6 +225,7 @@ class FurbyTherapistCLI:
         finally:
             # Ensure cleanup happens
             self._interactive_mode_active = False
+            self.furby_therapist.cleanup()
             self.error_handler.cleanup_resources()
             self.error_handler.logger.info("Interactive mode ended")
     
@@ -365,8 +271,7 @@ class FurbyTherapistCLI:
     
     def _clear_conversation_history(self):
         """Clear conversation history and start fresh."""
-        self.conversation = ConversationSession()
-        self.empty_input_count = 0
+        self.furby_therapist.clear_conversation_history()
         print(self.format_response_output("*refreshing chirp* Ooh! Fresh start! Furby is ready for a new conversation! What's on your mind? *excited beep*"))
     
     def single_query_mode(self, query: str):
@@ -470,13 +375,20 @@ def main():
         if cli and hasattr(cli, '_interactive_mode_active') and cli._interactive_mode_active:
             cli._display_goodbye_message()
         else:
-            # Fallback good night greeting for non-interactive mode
-            fallback_night = "Good night! *gentle purr* Furby hopes you have sweet dreams!\n\nkoh-koh may-may! (sleep love)"
+            # Use library to get fallback good night greeting if available
+            if cli and hasattr(cli, 'furby_therapist'):
+                fallback_night = cli.furby_therapist.get_good_night_greeting()
+            else:
+                fallback_night = "Good night! *gentle purr* Furby hopes you have sweet dreams!\n\nkoh-koh may-may! (sleep love)"
             print(f"\n\n{fallback_night} 💜")
         sys.exit(0)
     except Exception as e:
         print(f"*sad beep* Furby couldn't start: {e}")
         sys.exit(1)
+    finally:
+        # Ensure cleanup happens
+        if cli and hasattr(cli, 'furby_therapist'):
+            cli.furby_therapist.cleanup()
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ Keyword matcher for categorizing user queries.
 import logging
 from typing import Dict, List, Tuple, Optional
 from .database import ResponseDatabase
-from .models import ResponseCategory, QueryAnalysis
+from ..models import ResponseCategory, QueryAnalysis
 
 
 class KeywordMatcher:

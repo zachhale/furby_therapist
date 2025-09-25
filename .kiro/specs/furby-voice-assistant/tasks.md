@@ -143,13 +143,59 @@
   - Write unit tests to verify cycling humor only appears when --bikes flag is used
   - _Requirements: 2.2, 2.4, 2.5, 2.7, 3.1, 3.3_
 
-- [ ] 13. Create comprehensive test suite
+- [x] 13. Refactor response generation into reusable library
+  - Create a clean library interface that separates response generation logic from CLI-specific code
+  - Design a FurbyTherapist class that encapsulates all response generation functionality
+  - Implement library methods for single query processing with cycling mode support
+  - Create library initialization that accepts cycling_mode parameter for bikes flag functionality
+  - Separate CLI-specific logic (argument parsing, interactive mode, formatting) from core response generation
+  - Refactor CLI to use the new library interface while maintaining all existing functionality
+  - Ensure library can be imported and used independently without CLI dependencies
+  - Create library methods for:
+    - Processing single queries with optional cycling mode
+    - Getting available response categories
+    - Accessing conversation history and session management
+    - Retrieving good morning/good night greetings
+    - Managing repeat functionality
+  - Design library interface to be stateful (maintains conversation context) or stateless (single query processing)
+  - Write unit tests for the library interface to ensure it works independently of CLI
+  - Update existing CLI tests to verify they still work with the refactored architecture
+  - Create example usage documentation showing how to use the library programmatically
+  - _Requirements: 1.1, 1.3, 2.1, 2.2, 3.1, 3.3_
+
+- [x] 14. Reorganize project structure for three-function architecture
+  - Design project structure to support three distinct functions:
+    1. **Core Library**: Importable library for external projects (furby_therapist.core or furby_therapist.lib)
+    2. **CLI Interface**: Command-line tool that imports and uses the library (furby_therapist.cli)
+    3. **Future Voice Interface**: Prepare structure for upcoming voice-enabled chatbot project (separate project that will import this library)
+  - Create proper Python package structure following standard conventions:
+    - `furby_therapist/` (main package)
+    - `furby_therapist/core/` or `furby_therapist/lib/` (core library components)
+    - `furby_therapist/cli/` (CLI-specific code)
+    - `furby_therapist/models/` (shared data models)
+    - `furby_therapist/data/` (JSON files, resources)
+  - Separate core library components from CLI-specific code into distinct modules
+  - Move CLI entry point and argument parsing to dedicated cli module
+  - Organize library components into logical submodules (processor, matcher, responses, etc.)
+  - Create clean public API surface in main `__init__.py` for external library usage
+  - Ensure core library can be imported cleanly without any CLI dependencies
+  - Design library interface to be easily consumable by future voice interface project
+  - Update import statements throughout the codebase to reflect new structure
+  - Move CLI-specific files (argument parsing, interactive mode, formatting) to cli package
+  - Create separate entry points for library vs CLI usage in setup configuration
+  - Update all tests to work with the new import structure and maintain test organization
+  - Update documentation to reflect the new project organization and usage patterns
+  - Follow Python packaging best practices to enable easy distribution and external consumption
+  - Prepare structure to support future voice interface as a separate project that imports this library
+  - _Requirements: 1.1, 1.3, 3.1_
+
+- [ ] 15. Create comprehensive test suite
   - Write unit tests for all core components (processor, matcher, engine)
   - Add integration tests for end-to-end query processing
   - Add manual test scenarios for therapeutic quality and Furby authenticity
   - _Requirements: 5.4, 5.6_
 
-- [ ] 14. Add packaging and deployment setup
+- [ ] 16. Add packaging and deployment setup
   - Create setup script for easy installation
   - Add executable script for convenient CLI access
   - Create documentation for installation and usage

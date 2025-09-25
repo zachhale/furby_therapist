@@ -3,7 +3,8 @@ Unit tests for the query processor module.
 """
 
 import unittest
-from furby_therapist.processor import QueryProcessor, QueryAnalysis
+from furby_therapist.core.processor import QueryProcessor
+from furby_therapist.models import QueryAnalysis
 
 
 class TestQueryProcessor(unittest.TestCase):

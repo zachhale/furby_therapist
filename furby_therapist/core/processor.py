@@ -7,7 +7,7 @@ import string
 import logging
 from typing import List, Optional
 
-from .models import QueryAnalysis
+from ..models import QueryAnalysis
 from .error_handler import validate_input
 
 

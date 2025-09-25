@@ -4,8 +4,8 @@ Unit tests for Furby greeting functionality with authentic Furbish validation.
 
 import unittest
 import re
-from furby_therapist.responses import ResponseEngine
-from furby_therapist.furbish_reference import validate_furbish_phrase, AUTHENTIC_FURBISH
+from furby_therapist.core.responses import ResponseEngine
+from furby_therapist.core.furbish_reference import validate_furbish_phrase, AUTHENTIC_FURBISH
 
 
 class TestGreetings(unittest.TestCase):
