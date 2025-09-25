@@ -167,104 +167,10 @@ class TestCompleteIntegration(unittest.TestCase):
             self.assertTrue(response.strip().endswith('\n') or len(response.strip()) > 0)
 
 
-class TestErrorHandlingIntegration(unittest.TestCase):
-    """Test error handling in the integrated system."""
-    
-    def test_missing_database_file(self):
-        """Test behavior when response database file is missing."""
-        # Test with a non-existent file path
-        with patch('furby_therapist.core.library.ResponseDatabase') as mock_db:
-            mock_db.side_effect = FileNotFoundError("Response database file not found")
-            
-            # Should handle the error gracefully during initialization
-            with self.assertRaises(SystemExit):
-                FurbyTherapistCLI()
-    
-    def test_corrupted_database_file(self):
-        """Test behavior when response database file is corrupted."""
-        with patch('furby_therapist.core.library.ResponseDatabase') as mock_db:
-            mock_db.side_effect = json.JSONDecodeError("Invalid JSON", "", 0)
-            
-            # Should handle the error gracefully during initialization
-            with self.assertRaises(SystemExit):
-                FurbyTherapistCLI()
-    
-    def test_component_failure_recovery(self):
-        """Test that the system recovers gracefully from component failures."""
-        cli = FurbyTherapistCLI()
-        
-        # Mock the library to fail during processing
-        with patch.object(cli.furby_therapist, 'process_query') as mock_process:
-            mock_process.side_effect = RuntimeError("Processing failed")
-            
-            response = cli.process_single_query("test query")
-            
-            # Should get an error response but not crash
-            self.assertIn("💜 Furby says:", response)
-            self.assertIn("failed", response.lower())
+# Error handling integration tests moved to test_error_handling.py to reduce overlap
 
 
-class TestCLIModeIntegration(unittest.TestCase):
-    """Test CLI mode integration."""
-    
-    @patch('furby_therapist.core.responses.open', new_callable=mock_open)
-    @patch('furby_therapist.core.responses.Path')
-    @patch('furby_therapist.core.database.ResponseDatabase')
-    def setUp(self, mock_db, mock_path, mock_file):
-        """Set up test fixtures."""
-        # Create minimal test responses
-        test_responses = {
-            "categories": {
-                "fallback": {
-                    "keywords": [],
-                    "responses": ["*gentle chirp* Furby is here to listen!"],
-                    "furby_sounds": ["*gentle chirp*"],
-                    "furbish_phrases": [["U-nye way-loh", "you matter"]]
-                }
-            }
-        }
-        
-        mock_file.return_value.read.return_value = json.dumps(test_responses)
-        mock_path.return_value.__truediv__.return_value = "test.json"
-        
-        # Mock the database to return test categories
-        mock_db_instance = MagicMock()
-        mock_db_instance.get_all_categories.return_value = {}
-        mock_db.return_value = mock_db_instance
-        
-        self.cli = FurbyTherapistCLI()
-    
-    def test_single_query_mode_integration(self):
-        """Test single query mode works end-to-end."""
-        query = "I need some encouragement"
-        
-        # This should work without throwing exceptions
-        response = self.cli.process_single_query(query)
-        
-        self.assertIn("💜 Furby says:", response)
-        self.assertGreater(len(response.strip()), 20)
-    
-    def test_format_response_output(self):
-        """Test response output formatting."""
-        test_response = "This is a test response *chirp*"
-        formatted = self.cli.format_response_output(test_response)
-        
-        self.assertIn("💜 Furby says:", formatted)
-        self.assertIn(test_response, formatted)
-    
-    def test_signal_handler_setup(self):
-        """Test that signal handlers can be set up without errors."""
-        # Should not raise any exceptions
-        self.cli.setup_signal_handlers()
-    
-    def test_interactive_mode_flag(self):
-        """Test interactive mode flag management."""
-        # Initially should be False
-        self.assertFalse(self.cli._interactive_mode_active)
-        
-        # Should be able to set it
-        self.cli._interactive_mode_active = True
-        self.assertTrue(self.cli._interactive_mode_active)
+# CLI mode integration tests moved to test_end_to_end.py to reduce overlap
 
 
 if __name__ == '__main__':

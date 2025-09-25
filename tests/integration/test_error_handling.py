@@ -87,17 +87,19 @@ class TestFurbyErrorHandler(unittest.TestCase):
         self.assertIn('*apologetic chirp*', message)
         self.assertIn('hiccup', message)
     
-    @unittest.skipUnless(hasattr(sys.modules.get('psutil', None), 'Process'), "psutil not available")
     def test_check_memory_usage_with_psutil(self):
         """Test memory usage check when psutil is available."""
-        # This test only runs if psutil is actually installed
         try:
             import psutil
+            # If psutil is available, test the actual functionality
             warning = self.error_handler.check_memory_usage()
             # Should return None or a warning string, but not crash
             self.assertIsInstance(warning, (type(None), str))
         except ImportError:
-            self.skipTest("psutil not available")
+            # If psutil is not available, test that the method handles it gracefully
+            warning = self.error_handler.check_memory_usage()
+            # Should return None when psutil is not available
+            self.assertIsNone(warning)
     
     @patch('furby_therapist.core.error_handler.PSUTIL_AVAILABLE', False)
     def test_check_memory_usage_no_psutil(self):

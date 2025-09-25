@@ -367,11 +367,24 @@ class TestResponseEngineIntegration(unittest.TestCase):
     def setUp(self):
         """Set up with real responses file."""
         # Use the actual responses.json file
-        responses_file = Path(__file__).parent.parent / "furby_therapist" / "responses.json"
+        # Find the project root by looking for furby_therapist directory
+        current_path = Path(__file__).resolve()
+        project_root = None
+        
+        # Walk up the directory tree to find the project root
+        for parent in current_path.parents:
+            if (parent / "furby_therapist").exists():
+                project_root = parent
+                break
+        
+        if project_root is None:
+            self.skipTest("Could not find project root directory")
+        
+        responses_file = project_root / "furby_therapist" / "data" / "responses.json"
         if responses_file.exists():
             self.engine = ResponseEngine(str(responses_file))
         else:
-            self.skipTest("responses.json file not found")
+            self.skipTest(f"responses.json file not found at {responses_file}")
     
     def test_all_categories_work(self):
         """Test that all categories in the real file work correctly."""

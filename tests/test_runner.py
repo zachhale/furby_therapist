@@ -94,6 +94,28 @@ def run_unit_tests():
     return result.wasSuccessful()
 
 
+def run_performance_tests():
+    """Run performance and stress tests."""
+    loader = unittest.TestLoader()
+    suite = loader.discover('tests/performance', pattern='test_*.py')
+    
+    runner = unittest.TextTestRunner(verbosity=2)
+    result = runner.run(suite)
+    
+    return result.wasSuccessful()
+
+
+def run_manual_tests():
+    """Run manual test scenarios (requires human evaluation)."""
+    loader = unittest.TestLoader()
+    suite = loader.discover('tests/manual', pattern='test_*.py')
+    
+    runner = unittest.TextTestRunner(verbosity=2)
+    result = runner.run(suite)
+    
+    return result.wasSuccessful()
+
+
 if __name__ == '__main__':
     import argparse
     
@@ -101,6 +123,8 @@ if __name__ == '__main__':
     parser.add_argument('--module', '-m', help='Run specific test module (e.g., test_library)')
     parser.add_argument('--integration', '-i', action='store_true', help='Run only integration tests')
     parser.add_argument('--unit', '-u', action='store_true', help='Run only unit tests')
+    parser.add_argument('--performance', '-p', action='store_true', help='Run only performance tests')
+    parser.add_argument('--manual', action='store_true', help='Run manual test scenarios')
     
     args = parser.parse_args()
     
@@ -110,6 +134,10 @@ if __name__ == '__main__':
         success = run_integration_tests()
     elif args.unit:
         success = run_unit_tests()
+    elif args.performance:
+        success = run_performance_tests()
+    elif args.manual:
+        success = run_manual_tests()
     else:
         success = run_all_tests()
     
